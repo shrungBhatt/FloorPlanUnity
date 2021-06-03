@@ -16,8 +16,10 @@ public class Builder : MonoBehaviour
 
     public GameObject ConnectorPrefab;
     public GameObject WallPrefab;
+    public Texture LabelBackgroundTexture;
 
     List<GameObject> rooms = new List<GameObject>();
+    List<GameObject> connectors = new List<GameObject>();
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +30,72 @@ public class Builder : MonoBehaviour
         //DeleteRoomButton.onClick.AddListener(DeleteRoom);
         #endregion
         rooms.Add(CreateRoom("Main Room", 4, 4));
+    }
+
+    private void OnGUI()
+    {
+        if (connectors != null)
+        {
+            if (connectors.Count > 0)
+            {
+                DrawText();
+            }
+        }
+    }
+
+    //float rotAngle = 0;
+    //Vector2 pivotPoint;
+
+    //void OnGUI()
+    //{
+    //    pivotPoint = new Vector2(Screen.width / 2, Screen.height / 2);
+    //    GUIUtility.RotateAroundPivot(rotAngle, pivotPoint);
+    //    if (GUI.Button(new Rect(Screen.width / 2 - 25, Screen.height / 2 - 25, 50, 50), "Rotate"))
+    //    {
+    //        rotAngle += 10;
+    //    }
+    //}
+
+    private GUIStyle currentStyle = null;
+
+    void DrawText()
+    {
+
+        for (int i = 0; i < connectors.Count; i++)
+        {
+            var pos = Camera.main.WorldToScreenPoint(connectors[i].transform.position);
+            var text = connectors[i].transform.position.ToString();
+            var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
+            GUI.contentColor = Color.blue;
+            var rect = new Rect(pos.x, Screen.height - pos.y, textSize.x, textSize.y);
+            InitStyles((int)rect.width, (int)rect.height);
+            var matrixBackup = GUI.matrix;
+            GUIUtility.RotateAroundPivot(270, new Vector2(rect.x, rect.y));
+            GUI.Label(rect, text, currentStyle);
+            GUI.matrix = matrixBackup;
+        }
+    }
+
+    private void InitStyles(int width, int height)
+    {
+        if (currentStyle == null)
+        {
+            currentStyle = new GUIStyle(GUI.skin.box);
+            currentStyle.normal.background = MakeTex(width, height, Color.white);
+        }
+    }
+
+    private Texture2D MakeTex(int width, int height, Color col)
+    {
+        Color[] pix = new Color[width * height];
+        for (int i = 0; i < pix.Length; ++i)
+        {
+            pix[i] = col;
+        }
+        Texture2D result = new Texture2D(width, height);
+        result.SetPixels(pix);
+        result.Apply();
+        return result;
     }
 
     private void DeleteRoom()
@@ -46,7 +114,6 @@ public class Builder : MonoBehaviour
     GameObject CreateRoom(string id, int corners, int walls)
     {
         GameObject room = new GameObject(id);
-        var connectors = new List<GameObject>();
         for (int i = 0; i < corners; i++)
         {
             GameObject connector;

@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c49e76de8e11b3b4cbc55903fe42655d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoomOutMin: 5
+  zoomOutMin: 2
   zoomOutMax: 20
 --- !u!20 &519420031
 Camera:
@@ -321,6 +321,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ConnectorPrefab: {fileID: 2088126748904706250, guid: fe4c495a27431ae40b266fc3a66d006c, type: 3}
   WallPrefab: {fileID: 5258251683267508912, guid: 87387cb363db3034eaf510ced76fccfa, type: 3}
+  LabelBackgroundTexture: {fileID: 10307, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &1484828902
 MonoBehaviour:
   m_ObjectHideFlags: 0
