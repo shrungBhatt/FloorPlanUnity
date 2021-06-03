@@ -21,6 +21,7 @@ public class Builder : MonoBehaviour
     List<GameObject> _rooms = new List<GameObject>();
     List<GameObject> _corners = new List<GameObject>();
     LineRenderer _lineRendererComponent;
+    EdgeCollider2D _lineEdgeCollider;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +33,9 @@ public class Builder : MonoBehaviour
         //DeleteRoomButton.onClick.AddListener(DeleteRoom);
         #endregion
 
-        _lineRendererComponent = Instantiate(LineRenderer, new Vector3(0, 0, 0), Quaternion.identity).GetComponent<LineRenderer>();
+        var line = Instantiate(LineRenderer, new Vector3(0, 0, 0), Quaternion.identity);
+        _lineRendererComponent = line.GetComponent<LineRenderer>();
+        _lineEdgeCollider = line.GetComponent<EdgeCollider2D>();
 
         _rooms.Add(CreateRoom("Main Room", 4, 4));
     }
@@ -98,10 +101,13 @@ public class Builder : MonoBehaviour
         {
             if (_corners.Count > 0)
             {
+                List<Vector2> points = new List<Vector2>();
                 for (int i = 0; i < _corners.Count; i++)
                 {
                     _lineRendererComponent.SetPosition(i, _corners[i].transform.position);
+                    points.Add(new Vector2(_corners[i].transform.position.x, _corners[i].transform.position.y));
                 }
+                _lineEdgeCollider.points = points.ToArray();
             }
         }
     }
