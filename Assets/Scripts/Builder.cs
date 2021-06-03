@@ -43,19 +43,6 @@ public class Builder : MonoBehaviour
         }
     }
 
-    //float rotAngle = 0;
-    //Vector2 pivotPoint;
-
-    //void OnGUI()
-    //{
-    //    pivotPoint = new Vector2(Screen.width / 2, Screen.height / 2);
-    //    GUIUtility.RotateAroundPivot(rotAngle, pivotPoint);
-    //    if (GUI.Button(new Rect(Screen.width / 2 - 25, Screen.height / 2 - 25, 50, 50), "Rotate"))
-    //    {
-    //        rotAngle += 10;
-    //    }
-    //}
-
     private GUIStyle currentStyle = null;
 
     void DrawText()
