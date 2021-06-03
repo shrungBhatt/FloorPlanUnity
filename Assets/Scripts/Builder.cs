@@ -23,9 +23,9 @@ public class Builder : MonoBehaviour
     {
         #region Development
 
-        AddRoomButton.onClick.AddListener(GenerateRoom);
+        //AddRoomButton.onClick.AddListener(GenerateRoom);
 
-        DeleteRoomButton.onClick.AddListener(DeleteRoom);
+        //DeleteRoomButton.onClick.AddListener(DeleteRoom);
         #endregion
         rooms.Add(CreateRoom("Main Room", 4, 4));
     }
@@ -183,8 +183,8 @@ public class Builder : MonoBehaviour
 
     #region For development purpose only
 
-    public Button AddRoomButton;
-    public Button DeleteRoomButton;
+    //public Button AddRoomButton;
+    //public Button DeleteRoomButton;
 
 
     #endregion
