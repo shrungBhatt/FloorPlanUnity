@@ -16,8 +16,12 @@ public class Builder : MonoBehaviour
 
     public GameObject ConnectorPrefab;
     public GameObject WallPrefab;
+    public GameObject LineRenderer;
 
-    List<GameObject> rooms = new List<GameObject>();
+    List<GameObject> _rooms = new List<GameObject>();
+    List<GameObject> _corners = new List<GameObject>();
+    LineRenderer _lineRendererComponent;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,12 +31,15 @@ public class Builder : MonoBehaviour
 
         //DeleteRoomButton.onClick.AddListener(DeleteRoom);
         #endregion
-        rooms.Add(CreateRoom("Main Room", 4, 4));
+
+        _lineRendererComponent = Instantiate(LineRenderer, new Vector3(0, 0, 0), Quaternion.identity).GetComponent<LineRenderer>();
+
+        _rooms.Add(CreateRoom("Main Room", 4, 4));
     }
 
     private void DeleteRoom()
     {
-        foreach(var room in rooms)
+        foreach (var room in _rooms)
         {
             Destroy(room);
         }
@@ -40,13 +47,12 @@ public class Builder : MonoBehaviour
 
     private void GenerateRoom()
     {
-        rooms.Add(CreateRoom("Main Room", 4, 4));
+        _rooms.Add(CreateRoom("Main Room", 4, 4));
     }
 
     GameObject CreateRoom(string id, int corners, int walls)
     {
         GameObject room = new GameObject(id);
-        var connectors = new List<GameObject>();
         for (int i = 0; i < corners; i++)
         {
             GameObject connector;
@@ -73,13 +79,31 @@ public class Builder : MonoBehaviour
                     break;
             }
             connector.transform.SetParent(room.transform);
-            connectors.Add(connector);
+            _corners.Add(connector);
         }
 
-        GenerateWalls(room, 4, connectors);
+        if (_lineRendererComponent != null)
+        {
+            _lineRendererComponent.positionCount = _corners.Count;
+        }
+        //GenerateWalls(room, 4, _corners);
 
         return room;
 
+    }
+
+    void Update()
+    {
+        if (_lineRendererComponent != null)
+        {
+            if (_corners.Count > 0)
+            {
+                for (int i = 0; i < _corners.Count; i++)
+                {
+                    _lineRendererComponent.SetPosition(i, _corners[i].transform.position);
+                }
+            }
+        }
     }
 
     void GenerateWalls(GameObject room, int walls, List<GameObject> connectors)
@@ -106,7 +130,7 @@ public class Builder : MonoBehaviour
         var wall = Instantiate(WallPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         wall.name = wallId;
         var wallScript = wall.GetComponent<Wall>();
-        if(wallScript != null)
+        if (wallScript != null)
         {
             wallScript.CornerOne = cornerOneRectTransform.gameObject;
             wallScript.CornerTwo = cornerTwoRectTransform.gameObject;
@@ -115,20 +139,20 @@ public class Builder : MonoBehaviour
 
         //Add the wall reference in the corners
         var c1ConnectorScript = cornerOneRectTransform.gameObject.GetComponent<Connector>();
-        if(c1ConnectorScript != null)
+        if (c1ConnectorScript != null)
         {
             c1ConnectorScript.Walls.Add(wall);
         }
 
         var c2ConnectorScript = cornerTwoRectTransform.gameObject.GetComponent<Connector>();
-        if(c2ConnectorScript != null)
+        if (c2ConnectorScript != null)
         {
             c2ConnectorScript.Walls.Add(wall);
         }
 
         //Set the size of the collider
         var wallCollider = wall.GetComponent<BoxCollider2D>();
-        if(wallCollider != null)
+        if (wallCollider != null)
         {
             if (isHorizontal)
             {
@@ -136,7 +160,7 @@ public class Builder : MonoBehaviour
             }
             else
             {
-                wallCollider.size = new Vector2(4,1);
+                wallCollider.size = new Vector2(4, 1);
             }
         }
 
@@ -176,10 +200,7 @@ public class Builder : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
 
-    }
 
     #region For development purpose only
 

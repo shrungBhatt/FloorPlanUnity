@@ -18,6 +18,7 @@ namespace Assets.Scripts
         void Start()
         {
             base.IsHorizontalWall = IsHorizontal;
+            base.UseHorizontalDragLogic = true;
         }
 
         // Update is called once per frame

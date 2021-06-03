@@ -9,6 +9,8 @@ namespace Assets.Scripts
         protected bool IsHorizontalWall;
         Vector3 cachedPosition;
 
+        public bool UseHorizontalDragLogic = false;
+
         void OnMouseDown()
         {
             PanZoom.DisablePanZoom = true;
@@ -30,16 +32,20 @@ namespace Assets.Scripts
             // Pixel coordinates of mouse (x,y)
             Vector3 mousePoint = Input.mousePosition;
 
-            if (IsHorizontalWall)
+            if (UseHorizontalDragLogic)
             {
-                mousePoint.y = Input.mousePosition.y;
-                mousePoint.x = cachedPosition.x;
+                if (IsHorizontalWall)
+                {
+                    mousePoint.y = Input.mousePosition.y;
+                    mousePoint.x = cachedPosition.x;
+                }
+                else
+                {
+                    mousePoint.y = cachedPosition.y;
+                    mousePoint.x = Input.mousePosition.x;
+                }
             }
-            else
-            {
-                mousePoint.y = cachedPosition.y;
-                mousePoint.x = Input.mousePosition.x;
-            }
+            
 
             // z coordinate of game object on screen
             mousePoint.z = mZCoord;
