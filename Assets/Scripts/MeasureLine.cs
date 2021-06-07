@@ -31,10 +31,10 @@ namespace Assets.Scripts
 
         private void OnGUI()
         {
-            //if (CornerOne != null && CornerTwo != null)
-            //{
-            //    DrawText();
-            //}
+            if (Wall != null)
+            {
+                DrawText();
+            }
         }
 
         private GUIStyle currentStyle = null;
@@ -42,29 +42,45 @@ namespace Assets.Scripts
         void DrawText()
         {
 
-
-            //var measureLinePoints = ConvertWorldPositionToScreenPosition(transform.position);
-
-            //var distanceVector = new Vector3();
-            //if (IsHorizontal)
-            //{
-            //    distanceVector = Corner
-            //}
+            var distanceVector = Length().ToString("0.0");
 
 
-            //for (int i = 0; i < connectors.Count; i++)
-            //{
-            //    var pos = Camera.main.WorldToScreenPoint(connectors[i].transform.position);
-            //    var text = "Random Text";
-            //    var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
-            //    GUI.contentColor = Color.blue;
-            //    var rect = new Rect(pos.x, Screen.height - pos.y, textSize.x, textSize.y);
-            //    InitStyles((int)rect.width, (int)rect.height);
-            //    var matrixBackup = GUI.matrix;
-            //    GUIUtility.RotateAroundPivot(270, new Vector2(rect.x, rect.y));
-            //    GUI.Label(rect, text, currentStyle);
-            //    GUI.matrix = matrixBackup;
-            //}
+            var pos = Camera.main.WorldToScreenPoint(transform.position);
+            var text = $"{distanceVector} m";
+            var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
+            GUI.contentColor = Color.blue;
+            if (IsLeftWall || IsRightWall)
+            {
+                var rect = new Rect(pos.x - textSize.y / 1.5f, (Screen.height - pos.y) + textSize.y/0.9f, textSize.x + 20, textSize.y + 10);
+                InitStyles((int)rect.width, (int)rect.height);
+                var matrixBackup = GUI.matrix;
+                GUIUtility.RotateAroundPivot(270, new Vector2(rect.x, rect.y));
+                GUI.Label(rect, text, currentStyle);
+                GUI.matrix = matrixBackup;
+            }
+            else if (IsTopWall || IsBottomWall)
+            {
+                var rect = new Rect(pos.x - textSize.x / 1.5f, (Screen.height - pos.y) - textSize.y/1.5f, textSize.x + 20, textSize.y + 10);
+                InitStyles((int)rect.width, (int)rect.height);
+                GUI.Label(rect, text, currentStyle);
+            }
+
+
+        }
+
+        float Length()
+        {
+            var length = 0.0f;
+            if (IsLeftWall || IsRightWall)
+            {
+                length = Wall.transform.localScale.y;
+            }
+            else if (IsTopWall || IsBottomWall)
+            {
+                length = Wall.transform.localScale.x;
+            }
+
+            return length;
         }
 
         private void InitStyles(int width, int height)
@@ -72,7 +88,9 @@ namespace Assets.Scripts
             if (currentStyle == null)
             {
                 currentStyle = new GUIStyle(GUI.skin.box);
-                currentStyle.normal.background = MakeTex(width, height, Color.white);
+                var color = Color.white;
+                currentStyle.fontSize = 18;
+                currentStyle.normal.background = MakeTex(width, height, color);
             }
         }
 
