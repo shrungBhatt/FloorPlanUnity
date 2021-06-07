@@ -58,11 +58,12 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Builder.cs" />
     <Compile Include="Assets\Scripts\Util.cs" />
-    <Compile Include="Assets\Scripts\Connector.cs" />
-    <Compile Include="Assets\Scripts\DragObject.cs" />
     <Compile Include="Assets\Scripts\PanZoom.cs" />
-    <Compile Include="Assets\Scripts\Wall.cs" />
+    <Compile Include="Assets\Scripts\Connector.cs" />
     <Compile Include="Assets\Scripts\MeasureLine.cs" />
+    <Compile Include="Assets\Scripts\DragObject.cs" />
+    <Compile Include="Assets\Scripts\Wall.cs" />
+    <Compile Include="Assets\Scripts\Room.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

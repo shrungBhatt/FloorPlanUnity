@@ -5,19 +5,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static Assets.Scripts.Util;
+using static Assets.Scripts.Connector;
+using static Assets.Scripts.Wall;
 
 public class Builder : MonoBehaviour
 {
-
-    const string BOTTOM_LEFT_CORNER = "bottomLeftCorner";
-    const string TOP_LEFT_CORNER = "topLeftCorner";
-    const string TOP_RIGHT_CORNER = "topRightCorner";
-    const string BOTTOM_RIGHT_CORNER = "bottomRightCorner";
-
     public GameObject ConnectorPrefab;
     public GameObject WallPrefab;
     public GameObject MeasureLinePrefab;
-    public Texture LabelBackgroundTexture;
+    public GameObject RoomPrefab;
 
     List<GameObject> rooms = new List<GameObject>();
     List<GameObject> connectors = new List<GameObject>();
@@ -49,7 +45,8 @@ public class Builder : MonoBehaviour
 
     GameObject CreateRoom(string id, int corners, int walls)
     {
-        GameObject room = new GameObject(id);
+        var room = Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity);
+        room.name = id;
         for (int i = 0; i < corners; i++)
         {
             GameObject connector;
@@ -85,7 +82,7 @@ public class Builder : MonoBehaviour
 
     }
 
-    void GenerateWalls(GameObject room, int walls, List<GameObject> connectors)
+    void GenerateWalls(GameObject room, int noOfWalls, List<GameObject> connectors)
     {
         var bottomLeftCorner = connectors.Find(x => x.name.Equals(BOTTOM_LEFT_CORNER));
         var topLeftCorner = connectors.Find(x => x.name.Equals(TOP_LEFT_CORNER));
@@ -93,15 +90,21 @@ public class Builder : MonoBehaviour
         var topRightCorner = connectors.Find(x => x.name.Equals(TOP_RIGHT_CORNER));
         var bottomRightCorner = connectors.Find(x => x.name.Equals(BOTTOM_RIGHT_CORNER));
 
+        var walls = new List<GameObject>();
+        walls.Add(GetWall(bottomLeftCorner.transform, topLeftCorner.transform, false, LEFT_WALL, room));
+        walls.Add(GetWall(topLeftCorner.transform, topRightCorner.transform, true, TOP_WALL, room));
+        walls.Add(GetWall(topRightCorner.transform, bottomRightCorner.transform, false, RIGHT_WALL, room));
+        walls.Add(GetWall(bottomLeftCorner.transform, bottomRightCorner.transform, true, BOTTOM_WALL, room));
 
-        AddWall(bottomLeftCorner.transform, topLeftCorner.transform, false, "leftWall", room);
-        AddWall(topLeftCorner.transform, topRightCorner.transform, true, "topWall", room);
-        AddWall(topRightCorner.transform, bottomRightCorner.transform, false, "rightWall", room);
-        AddWall(bottomLeftCorner.transform, bottomRightCorner.transform, true, "bottomWall", room);
-
+        var roomScript = room.GetComponent<Room>();
+        if(roomScript != null)
+        {
+            roomScript.Corners = connectors;
+            roomScript.Walls = walls;
+        }
     }
 
-    void AddWall(Transform cornerOneRectTransform, Transform cornerTwoRectTransform, bool isHorizontal, string wallId, GameObject parent)
+    GameObject GetWall(Transform cornerOneRectTransform, Transform cornerTwoRectTransform, bool isHorizontal, string wallId, GameObject parent)
     {
         var c1ScreenPos = ConvertWorldPositionToScreenPosition(cornerOneRectTransform.position);
         var c2ScreenPos = ConvertWorldPositionToScreenPosition(cornerTwoRectTransform.position);
@@ -178,6 +181,8 @@ public class Builder : MonoBehaviour
         }
 
         AddMeasureLine(wall);
+
+        return wall;
     }
 
     private void AddMeasureLine(GameObject wall)
@@ -196,7 +201,7 @@ public class Builder : MonoBehaviour
 
             switch (wall.name)
             {
-                case "leftWall":
+                case LEFT_WALL:
                     measureLine.transform.localScale = new Vector3(measureLine.transform.localScale.x, wall.transform.localScale.y, wall.transform.localScale.z);
                     measureLineScript.IsLeftWall = true;
 
@@ -204,7 +209,7 @@ public class Builder : MonoBehaviour
                     offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x - offset, measureLineScreenPosition.y, measureLineScreenPosition.z));
                     measureLine.transform.position = offsetPostion;
                     break;
-                case "topWall":
+                case TOP_WALL:
                     measureLine.transform.position = wall.transform.position;
                     measureLine.transform.localScale = new Vector3(wall.transform.localScale.x, measureLine.transform.localScale.y, wall.transform.localScale.z);
                     measureLineScript.IsTopWall = true;
@@ -212,7 +217,7 @@ public class Builder : MonoBehaviour
                     offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x , measureLineScreenPosition.y + offset, measureLineScreenPosition.z));
                     measureLine.transform.position = offsetPostion;
                     break;
-                case "rightWall":
+                case RIGHT_WALL:
                     measureLine.transform.position = wall.transform.position;
                     measureLine.transform.localScale = new Vector3(measureLine.transform.localScale.x, wall.transform.localScale.y, wall.transform.localScale.z);
                     measureLineScript.IsRightWall = true;
@@ -220,7 +225,7 @@ public class Builder : MonoBehaviour
                     offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x + offset, measureLineScreenPosition.y, measureLineScreenPosition.z));
                     measureLine.transform.position = offsetPostion;
                     break;
-                case "bottomWall":
+                case BOTTOM_WALL:
                     measureLine.transform.position = wall.transform.position;
                     measureLine.transform.localScale = new Vector3(wall.transform.localScale.x, measureLine.transform.localScale.y, wall.transform.localScale.z);
                     measureLineScript.IsBottomWall = true;

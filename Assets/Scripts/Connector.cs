@@ -3,39 +3,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public class Connector : MonoBehaviour
+namespace Assets.Scripts
 {
-
-    public List<GameObject> Walls = new List<GameObject>();
-    // Start is called before the first frame update
-    void Start()
+    public class Connector : MonoBehaviour
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+        public const string BOTTOM_LEFT_CORNER = "bottomLeftCorner";
+        public const string TOP_LEFT_CORNER = "topLeftCorner";
+        public const string TOP_RIGHT_CORNER = "topRightCorner";
+        public const string BOTTOM_RIGHT_CORNER = "bottomRightCorner";
 
-    public void OnCornerPositionChanged(string wallToIgnoreUpdate)
-    {
-        if(Walls != null)
+        public List<GameObject> Walls = new List<GameObject>();
+        // Start is called before the first frame update
+        void Start()
         {
-            foreach(var wall in Walls)
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+
+        public void OnCornerPositionChanged(string wallToIgnoreUpdate)
+        {
+            if (Walls != null)
             {
-                var component = wall.GetComponent<Wall>();
-                if(!string.IsNullOrEmpty(wallToIgnoreUpdate) && wallToIgnoreUpdate.Equals(component.name))
+                foreach (var wall in Walls)
                 {
-                    continue;
+                    var component = wall.GetComponent<Wall>();
+                    if (!string.IsNullOrEmpty(wallToIgnoreUpdate) && wallToIgnoreUpdate.Equals(component.name))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        component?.UpdateScale(component.IsHorizontal, name, component.gameObject);
+                    }
+
                 }
-                else
-                {
-                    component?.UpdateScale(component.IsHorizontal, name, component.gameObject);
-                }
-                
             }
         }
     }

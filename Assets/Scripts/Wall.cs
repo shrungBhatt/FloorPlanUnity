@@ -11,6 +11,12 @@ namespace Assets.Scripts
 {
     public class Wall : DragObject
     {
+        public const string LEFT_WALL = "leftWall";
+        public const string RIGHT_WALL = "rightWall";
+        public const string TOP_WALL = "topWall";
+        public const string BOTTOM_WALL = "bottomWall";
+
+
         public GameObject CornerOne;
         public GameObject CornerTwo;
         public bool IsHorizontal;
