@@ -16,6 +16,7 @@ public class Builder : MonoBehaviour
 
     public GameObject ConnectorPrefab;
     public GameObject WallPrefab;
+    public GameObject MeasureLinePrefab;
     public Texture LabelBackgroundTexture;
 
     List<GameObject> rooms = new List<GameObject>();
@@ -32,59 +33,7 @@ public class Builder : MonoBehaviour
         rooms.Add(CreateRoom("Main Room", 4, 4));
     }
 
-    private void OnGUI()
-    {
-        if (connectors != null)
-        {
-            if (connectors.Count > 0)
-            {
-                DrawText();
-            }
-        }
-    }
-
-    private GUIStyle currentStyle = null;
-
-    void DrawText()
-    {
-
-        for (int i = 0; i < connectors.Count; i++)
-        {
-            var pos = Camera.main.WorldToScreenPoint(connectors[i].transform.position);
-            var text = connectors[i].transform.position.ToString();
-            var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
-            GUI.contentColor = Color.blue;
-            var rect = new Rect(pos.x, Screen.height - pos.y, textSize.x, textSize.y);
-            InitStyles((int)rect.width, (int)rect.height);
-            var matrixBackup = GUI.matrix;
-            GUIUtility.RotateAroundPivot(270, new Vector2(rect.x, rect.y));
-            GUI.Label(rect, text, currentStyle);
-            GUI.matrix = matrixBackup;
-        }
-    }
-
-    private void InitStyles(int width, int height)
-    {
-        if (currentStyle == null)
-        {
-            currentStyle = new GUIStyle(GUI.skin.box);
-            currentStyle.normal.background = MakeTex(width, height, Color.white);
-        }
-    }
-
-    private Texture2D MakeTex(int width, int height, Color col)
-    {
-        Color[] pix = new Color[width * height];
-        for (int i = 0; i < pix.Length; ++i)
-        {
-            pix[i] = col;
-        }
-        Texture2D result = new Texture2D(width, height);
-        result.SetPixels(pix);
-        result.Apply();
-        return result;
-    }
-
+    
     private void DeleteRoom()
     {
         foreach(var room in rooms)
@@ -227,6 +176,65 @@ public class Builder : MonoBehaviour
 
             leftWallRectTransform.localScale = scale * 2;
         }
+
+        AddMeasureLine(wall);
+    }
+
+    private void AddMeasureLine(GameObject wall)
+    {
+        var measureLine = Instantiate(MeasureLinePrefab, Vector3.zero, Quaternion.identity);
+
+        if(measureLine != null)
+        {
+            var measureLineScript = measureLine.GetComponent<MeasureLine>();
+            measureLineScript.Wall = wall;
+            var offsetPostion = Vector3.zero;
+            const float offset = 50f;
+
+            measureLine.transform.position = wall.transform.position;
+            var measureLineScreenPosition = ConvertWorldPositionToScreenPosition(measureLine.transform.position);
+
+            switch (wall.name)
+            {
+                case "leftWall":
+                    measureLine.transform.localScale = new Vector3(measureLine.transform.localScale.x, wall.transform.localScale.y, wall.transform.localScale.z);
+                    measureLineScript.IsLeftWall = true;
+
+                    measureLineScreenPosition = ConvertWorldPositionToScreenPosition(measureLine.transform.position);
+                    offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x - offset, measureLineScreenPosition.y, measureLineScreenPosition.z));
+                    measureLine.transform.position = offsetPostion;
+                    break;
+                case "topWall":
+                    measureLine.transform.position = wall.transform.position;
+                    measureLine.transform.localScale = new Vector3(wall.transform.localScale.x, measureLine.transform.localScale.y, wall.transform.localScale.z);
+                    measureLineScript.IsTopWall = true;
+
+                    offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x , measureLineScreenPosition.y + offset, measureLineScreenPosition.z));
+                    measureLine.transform.position = offsetPostion;
+                    break;
+                case "rightWall":
+                    measureLine.transform.position = wall.transform.position;
+                    measureLine.transform.localScale = new Vector3(measureLine.transform.localScale.x, wall.transform.localScale.y, wall.transform.localScale.z);
+                    measureLineScript.IsRightWall = true;
+                    
+                    offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x + offset, measureLineScreenPosition.y, measureLineScreenPosition.z));
+                    measureLine.transform.position = offsetPostion;
+                    break;
+                case "bottomWall":
+                    measureLine.transform.position = wall.transform.position;
+                    measureLine.transform.localScale = new Vector3(wall.transform.localScale.x, measureLine.transform.localScale.y, wall.transform.localScale.z);
+                    measureLineScript.IsBottomWall = true;
+
+                    offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x, measureLineScreenPosition.y - offset, measureLineScreenPosition.z));
+                    measureLine.transform.position = offsetPostion;
+                    break;
+            }
+            measureLine.transform.SetParent(wall.transform);
+
+
+        }
+        
+
     }
 
     // Update is called once per frame
