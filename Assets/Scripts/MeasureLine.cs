@@ -55,6 +55,7 @@ namespace Assets.Scripts
                 InitStyles((int)rect.width, (int)rect.height);
                 var matrixBackup = GUI.matrix;
                 GUIUtility.RotateAroundPivot(270, new Vector2(rect.x, rect.y));
+                GUI.contentColor = Color.black;
                 GUI.Label(rect, text, currentStyle);
                 GUI.matrix = matrixBackup;
             }
@@ -62,6 +63,7 @@ namespace Assets.Scripts
             {
                 var rect = new Rect(pos.x - textSize.x / 1.5f, (Screen.height - pos.y) - textSize.y / 1.5f, textSize.x + 20, textSize.y + 10);
                 InitStyles((int)rect.width, (int)rect.height);
+                GUI.contentColor = Color.black;
                 GUI.Label(rect, text, currentStyle);
             }
 
@@ -95,6 +97,7 @@ namespace Assets.Scripts
                 currentStyle = new GUIStyle(GUI.skin.box);
                 var color = Color.white;
                 currentStyle.fontSize = 18;
+                currentStyle.normal.textColor = Color.black;
                 currentStyle.normal.background = MakeTex(width, height, color);
             }
         }

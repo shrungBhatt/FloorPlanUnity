@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static Assets.Scripts.Connector;
 using static Assets.Scripts.Util;
+using static Assets.Scripts.Wall;
 
 namespace Assets.Scripts
 {
@@ -14,52 +15,63 @@ namespace Assets.Scripts
 
         public List<GameObject> Corners = new List<GameObject>();
         public List<GameObject> Walls = new List<GameObject>();
-        public Texture BackgroundImage;
+        public GameObject BackgroundPrefab;
 
         BoxCollider2D Collider;
+        GameObject _backgroundGrid;
 
         private void Start()
         {
             Collider = GetComponent<BoxCollider2D>();
+            _backgroundGrid = Instantiate(BackgroundPrefab, Vector3.zero, Quaternion.identity);
         }
 
         private void Update()
         {
-            
-        }
-
-        private void OnGUI()
-        {
-            if(Corners.Count > 0)
+            if(Walls.Count > 0)
             {
-                var position = Vector2.zero;
-                var topLeftCornerPos = Vector2.zero;
-                var bottomRightCornerPos = Vector2.zero;
+                var leftWallPos = Vector3.zero;
+                var topWallPos = Vector3.zero;
+                var rightWallPos = Vector3.zero;
+                var bottomWallPos = Vector3.zero;
 
-                foreach(var corner in Corners)
+                var leftWallScale = Vector3.zero;
+                var topWallScale = Vector3.zero;
+
+                foreach(var wall in Walls)
                 {
-                    switch (corner.name)
+                    switch (wall.name)
                     {
-                        case BOTTOM_LEFT_CORNER:
-                            var screenPos = ConvertWorldPositionToScreenPosition(corner.transform.position);
-                            position.x = screenPos.x;
-                            position.y = screenPos.y;
+                        case LEFT_WALL:
+                            leftWallPos = ConvertWorldPositionToScreenPosition(wall.transform.position);
+                            leftWallScale = wall.transform.localScale;
                             break;
-                        case BOTTOM_RIGHT_CORNER:
-                            bottomRightCornerPos = ConvertWorldPositionToScreenPosition(corner.transform.position);
+                        case TOP_WALL:
+                            topWallPos = ConvertWorldPositionToScreenPosition(wall.transform.position);
+                            topWallScale = wall.transform.localScale;
                             break;
-                        case TOP_LEFT_CORNER:
-                            topLeftCornerPos = ConvertWorldPositionToScreenPosition(corner.transform.position);
+                        case RIGHT_WALL:
+                            rightWallPos = ConvertWorldPositionToScreenPosition(wall.transform.position);
+                            break;
+                        case BOTTOM_WALL:
+                            bottomWallPos = ConvertWorldPositionToScreenPosition(wall.transform.position);
                             break;
                     }
                 }
 
-                
-                var rect = new Rect(position.x, position.y, bottomRightCornerPos.x - position.x, topLeftCornerPos.y - position.y);
-                GUI.DrawTexture(rect, BackgroundImage, ScaleMode.ScaleAndCrop);
-                Debug.Log($"Postion of X:{rect.x}, Y:{rect.y} ###### Width:{rect.width}, Height:{rect.height}");
-            } 
-        }
+                //Set the background prefab transform position
+                // X = (rightWall.x + leftWall.x)/2, Y = rightWall.y, Z = rightWall.z
+                var position = new Vector3((rightWallPos.x + leftWallPos.x)/2, ((topWallPos.y + bottomWallPos.y))/2, topWallPos.z);
 
+                //Convert the position from Screen -> World position
+                _backgroundGrid.transform.position = ConvertScreenPositionToWorldPosition(position);
+
+                //Change the local scale
+                // X = topWallScale.x, Y = leftWallScale.y
+                _backgroundGrid.transform.localScale = new Vector3(topWallScale.x/6f, leftWallScale.y/6f, topWallScale.z);
+            }
+            
+            
+        }
     }
 }
