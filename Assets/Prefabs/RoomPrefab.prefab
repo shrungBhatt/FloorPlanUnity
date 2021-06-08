@@ -45,5 +45,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Corners: []
   Walls: []
-  BackgroundPrefab: {fileID: 1002256059259587919, guid: a73f0ea0a59896a4fab44450fc6fc285, type: 3}
-  BackgroundImage: {fileID: 2800000, guid: 672b65cf8c427e741ab72690c78364bc, type: 3}
+  BackgroundImage: {fileID: 2800000, guid: a2ced79f111f6784aa3d2f5185d90b76, type: 3}

@@ -42,16 +42,16 @@ namespace Assets.Scripts
         void DrawText()
         {
 
-            var distanceVector = Length().ToString("0.0");
-
+            var distanceVector = Length();
+            var distanceInFeetAndInch = ToFeetInches(distanceVector * 39.37f);
 
             var pos = Camera.main.WorldToScreenPoint(transform.position);
-            var text = $"{distanceVector} m";
+            var text = $"{distanceInFeetAndInch.Key}′ {distanceInFeetAndInch.Value}′′";
             var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
             GUI.contentColor = Color.blue;
             if (IsLeftWall || IsRightWall)
             {
-                var rect = new Rect(pos.x - textSize.y / 1.5f, (Screen.height - pos.y) + textSize.y/0.9f, textSize.x + 20, textSize.y + 10);
+                var rect = new Rect(pos.x - textSize.y / 1.5f, (Screen.height - pos.y) + textSize.y / 0.9f, textSize.x + 20, textSize.y + 10);
                 InitStyles((int)rect.width, (int)rect.height);
                 var matrixBackup = GUI.matrix;
                 GUIUtility.RotateAroundPivot(270, new Vector2(rect.x, rect.y));
@@ -60,7 +60,7 @@ namespace Assets.Scripts
             }
             else if (IsTopWall || IsBottomWall)
             {
-                var rect = new Rect(pos.x - textSize.x / 1.5f, (Screen.height - pos.y) - textSize.y/1.5f, textSize.x + 20, textSize.y + 10);
+                var rect = new Rect(pos.x - textSize.x / 1.5f, (Screen.height - pos.y) - textSize.y / 1.5f, textSize.x + 20, textSize.y + 10);
                 InitStyles((int)rect.width, (int)rect.height);
                 GUI.Label(rect, text, currentStyle);
             }
@@ -81,6 +81,11 @@ namespace Assets.Scripts
             }
 
             return length;
+        }
+
+        static KeyValuePair<int, double> ToFeetInches(float inches)
+        {
+            return new KeyValuePair<int, double>((int)inches / 12, (int)inches % 12);
         }
 
         private void InitStyles(int width, int height)
