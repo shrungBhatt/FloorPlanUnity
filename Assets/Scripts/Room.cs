@@ -10,20 +10,22 @@ using static Assets.Scripts.Wall;
 
 namespace Assets.Scripts
 {
-    public class Room : MonoBehaviour
+    public class Room : DragObject
     {
 
         public List<GameObject> Corners = new List<GameObject>();
         public List<GameObject> Walls = new List<GameObject>();
         public GameObject BackgroundPrefab;
 
-        BoxCollider2D Collider;
+        BoxCollider2D _collider;
         GameObject _backgroundGrid;
 
         private void Start()
         {
-            Collider = GetComponent<BoxCollider2D>();
+            _collider = GetComponent<BoxCollider2D>();
             _backgroundGrid = Instantiate(BackgroundPrefab, Vector3.zero, Quaternion.identity);
+            _backgroundGrid.name = "background";
+            _backgroundGrid.transform.SetParent(transform);
         }
 
         private void Update()
@@ -64,14 +66,56 @@ namespace Assets.Scripts
                 var position = new Vector3((rightWallPos.x + leftWallPos.x)/2, ((topWallPos.y + bottomWallPos.y))/2, topWallPos.z);
 
                 //Convert the position from Screen -> World position
-                _backgroundGrid.transform.position = ConvertScreenPositionToWorldPosition(position);
+                var screenPos = ConvertScreenPositionToWorldPosition(position);
+                _backgroundGrid.transform.position = screenPos;
+
+
+                //_collider.transform.position = new Vector3(screenPos.x, screenPos.y, screenPos.z);
+                //_collider.bounds.center.Set(screenPos.x, screenPos.y, screenPos.z);
+
 
                 //Change the local scale
                 // X = topWallScale.x, Y = leftWallScale.y
                 _backgroundGrid.transform.localScale = new Vector3(topWallScale.x/6f, leftWallScale.y/6f, topWallScale.z);
+                _collider.size = new Vector2(topWallScale.x - 1.5f, leftWallScale.y - 1.5f);
+
             }
             
-            
+        }
+
+        protected override void OnMouseDrag()
+        {
+            HighlightWalls(true);
+            base.OnMouseDrag();
+            _collider.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        }
+
+        private void HighlightWalls(bool flag)
+        {
+            if(Walls.Count > 0)
+            {
+                foreach(var wall in Walls)
+                {
+                    var renderer = wall.GetComponent<SpriteRenderer>();
+                    if(renderer != null)
+                    {
+                        if (flag)
+                        {
+                            renderer.color = Color.green;
+                        }
+                        else
+                        {
+                            renderer.color = Color.black;
+                        }
+                    }
+                }
+            }
+        }
+
+        protected override void OnMouseUp()
+        {
+            HighlightWalls(false);
+            base.OnMouseUp();
         }
     }
 }

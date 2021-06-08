@@ -7,6 +7,7 @@ namespace Assets.Scripts
         private Vector3 mOffset;
         private float mZCoord;
         protected bool IsHorizontalWall;
+        public bool EnableFreeMovement;
         Vector3 cachedPosition;
 
         void OnMouseDown()
@@ -19,7 +20,7 @@ namespace Assets.Scripts
             mOffset = gameObject.transform.position - GetMouseAsWorldPoint();
         }
 
-        void OnMouseUp()
+        protected virtual void OnMouseUp()
         {
             PanZoom.DisablePanZoom = false;
         }
@@ -29,17 +30,20 @@ namespace Assets.Scripts
 
             // Pixel coordinates of mouse (x,y)
             Vector3 mousePoint = Input.mousePosition;
-
-            if (IsHorizontalWall)
+            if (!EnableFreeMovement)
             {
-                mousePoint.y = Input.mousePosition.y;
-                mousePoint.x = cachedPosition.x;
+                if (IsHorizontalWall)
+                {
+                    mousePoint.y = Input.mousePosition.y;
+                    mousePoint.x = cachedPosition.x;
+                }
+                else
+                {
+                    mousePoint.y = cachedPosition.y;
+                    mousePoint.x = Input.mousePosition.x;
+                }
             }
-            else
-            {
-                mousePoint.y = cachedPosition.y;
-                mousePoint.x = Input.mousePosition.x;
-            }
+            
 
             // z coordinate of game object on screen
             mousePoint.z = mZCoord;

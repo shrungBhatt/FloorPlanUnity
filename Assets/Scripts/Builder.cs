@@ -138,11 +138,11 @@ public class Builder : MonoBehaviour
         {
             if (isHorizontal)
             {
-                wallCollider.size = new Vector2(1, 4);
+                wallCollider.size = new Vector2(1, 5);
             }
             else
             {
-                wallCollider.size = new Vector2(4,1);
+                wallCollider.size = new Vector2(5,1);
             }
         }
 

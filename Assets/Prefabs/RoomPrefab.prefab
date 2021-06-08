@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aab26d69e8e89b49b441f64828b254a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnableFreeMovement: 1
   Corners: []
   Walls: []
   BackgroundPrefab: {fileID: 5591762342584465638, guid: 49166f033e906fa4e924213d56147139, type: 3}
