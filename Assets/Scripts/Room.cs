@@ -68,7 +68,7 @@ namespace Assets.Scripts
                 //Convert the position from Screen -> World position
                 var screenPos = ConvertScreenPositionToWorldPosition(position);
                 _backgroundGrid.transform.position = screenPos;
-
+                _collider.offset = new Vector2(screenPos.x - _collider.transform.position.x, screenPos.y - _collider.transform.position.y);
 
                 //_collider.transform.position = new Vector3(screenPos.x, screenPos.y, screenPos.z);
                 //_collider.bounds.center.Set(screenPos.x, screenPos.y, screenPos.z);
