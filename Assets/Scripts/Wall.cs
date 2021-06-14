@@ -108,5 +108,17 @@ namespace Assets.Scripts
                 leftWallRectTransform.localScale = scale;
             }
         }
+
+        public GameObject GetOtherCorner(string cornerBeingDragged)
+        {
+            if (CornerOne.name.Equals(cornerBeingDragged))
+            {
+                return CornerTwo;
+            }
+            else
+            {
+                return CornerOne;
+            }
+        }
     }
 }

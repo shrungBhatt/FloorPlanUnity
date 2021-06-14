@@ -38,11 +38,11 @@ namespace Assets.Scripts
                 switch (i)
                 {
                     
-                    case 1:
+                    case 0:
                         connector = Instantiate(ConnectorPrefab, new Vector3(-2, 2, 2), Quaternion.identity);
                         connector.name = TOP_LEFT_CORNER;
                         break;
-                    case 2:
+                    case 1:
                         connector = Instantiate(ConnectorPrefab, new Vector3(2, 2, 2), Quaternion.identity);
                         connector.name = TOP_RIGHT_CORNER;
                         break;
