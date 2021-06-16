@@ -28,10 +28,31 @@ namespace Assets.Scripts
             //Step 2 - Calculate the angles of each triangles
             foreach(var triangle in triangles)
             {
-                triangle.e1 = new Edge(triangle.v1, triangle.v2);
-                triangle.e2 = new Edge(triangle.v2, triangle.v3);
-                triangle.e3 = new Edge(triangle.v1, triangle.v3);
+                triangle.e1 = new Edge(triangle.v1, triangle.v2, oppositeVertex: triangle.v3) ;
+                triangle.e2 = new Edge(triangle.v2, triangle.v3, oppositeVertex: triangle.v1);
+                triangle.e3 = new Edge(triangle.v1, triangle.v3, oppositeVertex: triangle.v2);
                 triangle.CalculateAngles();
+
+                foreach(var key in triangle.EdgeAnglePair.Keys)
+                {
+                    var vertex = hullPoints.Find(x => x.id == key.id);
+                    if(vertex != null)
+                    {
+                        vertex.angle += triangle.EdgeAnglePair[key];
+                    }
+                    else
+                    {
+                        Debug.LogError("Vertex not found");
+                    }
+                }
+            }
+
+
+            hullPoints = hullPoints.OrderBy(x => x.id).ToList();
+
+            foreach(var point in hullPoints)
+            {
+                Debug.Log($"The vertex {point.id} has angle {point.angle}");
             }
 
             Debug.Log("");
@@ -246,6 +267,8 @@ namespace Assets.Scripts
 
         public int id;
 
+        public double angle;
+
         public Vertex(Vector3 position, int id)
         {
             this.position = position;
@@ -302,7 +325,7 @@ namespace Assets.Scripts
         public Edge e2;
         public Edge e3;
 
-        public Dictionary<Edge, double> EdgeAnglePair = new Dictionary<Edge, double>();
+        public Dictionary<Vertex, double> EdgeAnglePair = new Dictionary<Vertex, double>();
 
         //If we are using the half edge mesh structure, we just need one half edge
         public HalfEdge halfEdge;
@@ -342,7 +365,7 @@ namespace Assets.Scripts
             var b = e2.Length;
             var c = e3.Length;
             a1 = Math.Acos((b * b + c * c - a * a) / (2 * b * c)) * 180/Math.PI;
-            EdgeAnglePair.Add(e1, a1);
+            EdgeAnglePair.Add(e1.oppositeVertex, a1);
             return a1;
         }
 
@@ -352,7 +375,7 @@ namespace Assets.Scripts
             var b = e2.Length;
             var c = e3.Length;
             a2 = Math.Acos((a * a + c * c - b * b) / (2 * a * c)) * 180 / Math.PI;
-            EdgeAnglePair.Add(e2, a2);
+            EdgeAnglePair.Add(e2.oppositeVertex, a2);
             return a2;
         }
 
@@ -362,7 +385,7 @@ namespace Assets.Scripts
             var b = e2.Length;
             var c = e3.Length;
             a3 = Math.Acos((a * a + b * b - c * c) / (2 * a * b)) * 180 / Math.PI;
-            EdgeAnglePair.Add(e3, a3);
+            EdgeAnglePair.Add(e3.oppositeVertex, a3);
             return a3;
         }
     }
@@ -371,6 +394,7 @@ namespace Assets.Scripts
     {
         public Vertex v1;
         public Vertex v2;
+        public Vertex oppositeVertex;
 
         public double Length;
 
@@ -379,10 +403,12 @@ namespace Assets.Scripts
 
         public bool isDiagonal = false;
 
-        public Edge(Vertex v1, Vertex v2)
+
+        public Edge(Vertex v1, Vertex v2, Vertex oppositeVertex)
         {
             this.v1 = v1;
             this.v2 = v2;
+            this.oppositeVertex = oppositeVertex;
             Length = Vector3.Magnitude(v2.position - v1.position);
         }
 
