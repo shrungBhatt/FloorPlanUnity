@@ -139,8 +139,10 @@ namespace Assets.Scripts
                     points.Add(convexHull[0]);
                 }
 
+                System.Random rnd = new System.Random();
+
                 //Pick next point randomly
-                Vertex nextPoint = points[UnityEngine.Random.Range(0, points.Count)];
+                Vertex nextPoint = points[rnd.Next(0, points.Count)];
 
                 //To 2d space so we can see if a point is to the left is the vector ab
                 Vector2 a = currentPoint.GetPos2D_XZ();
@@ -429,4 +431,11 @@ namespace Assets.Scripts
         }
     }
     #endregion
+
+    class Point3d
+    {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+    }
 }
