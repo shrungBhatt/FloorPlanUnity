@@ -56,15 +56,17 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Builder01.cs" />
     <Compile Include="Assets\Scripts\Builder.cs" />
     <Compile Include="Assets\Scripts\Util.cs" />
     <Compile Include="Assets\Scripts\PanZoom.cs" />
+    <Compile Include="Assets\Scripts\AngleCalculator.cs" />
     <Compile Include="Assets\Scripts\Connector.cs" />
+    <Compile Include="Assets\Scripts\Triangulation.cs" />
     <Compile Include="Assets\Scripts\Room.cs" />
     <Compile Include="Assets\Scripts\MeasureLine.cs" />
     <Compile Include="Assets\Scripts\DragObject.cs" />
     <Compile Include="Assets\Scripts\Wall.cs" />
-    <Compile Include="Assets\Scripts\Builder01.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

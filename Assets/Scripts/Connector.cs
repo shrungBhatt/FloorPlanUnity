@@ -67,9 +67,9 @@ namespace Assets.Scripts
                         var midpoint = new Vector2((c1Pos.x + c2Pos.x) / 2, (c1Pos.y + c2Pos.y) / 2);
 
                         //Find the angle between both the corners
-                        Vector3 dir = c2Pos - c1Pos;
-                        dir = otherCorner.transform.InverseTransformDirection(dir);
-                        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                        //Vector3 dir = c2Pos - c1Pos;
+                        //dir = otherCorner.transform.InverseTransformDirection(dir);
+                        //float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                         //float angle = CalculateAngle(transform.position, otherCorner.transform.position);
 
                         //Convert the screen coordinates to world co-ordinates.
@@ -79,10 +79,12 @@ namespace Assets.Scripts
                         wall.transform.position = new Vector3(midPointScreenPos.x, midPointScreenPos.y, wall.transform.position.z);
 
 
-                        //Rotate the wall transform by that angle.
-                        wall.transform.rotation = Quaternion.Euler(0, 0, angle);
+                        var degree = AngleInDeg(c1Pos, c2Pos);
 
-                        Debug.Log($"angle: {angle}");
+                        //Rotate the wall transform by that angle.
+                        wall.transform.rotation = Quaternion.Euler(0, 0, degree);
+
+                        Debug.Log($"angle: {degree}");
                     }
                     else
                     {
@@ -99,9 +101,16 @@ namespace Assets.Scripts
 
         }
 
-        public static float CalculateAngle(Vector3 from, Vector3 to)
+        //This returns the angle in radians
+        public static float AngleInRad(Vector3 vec1, Vector3 vec2)
         {
-            return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
+            return Mathf.Atan2(vec2.y - vec1.y, vec2.x - vec1.x);
+        }
+
+        //This returns the angle in degrees
+        public static float AngleInDeg(Vector3 vec1, Vector3 vec2)
+        {
+            return AngleInRad(vec1, vec2) * 180 / Mathf.PI;
         }
 
         protected override void OnMouseUp()
