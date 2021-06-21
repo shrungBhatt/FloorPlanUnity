@@ -13,10 +13,11 @@ namespace Assets.Scripts
         {
             var samplePoints = new List<Vertex>
             {
-                new Vertex(new Vector3(0.5103803f, -0.42641863f, 0.031951603f), 0),
-                new Vertex(new Vector3(0.8607999f, -0.42641854f, -0.35582685f), 1),
-                new Vertex(new Vector3(0.049748395f, -0.4264186f, -1.0802422f), 2),
-                new Vertex(new Vector3(-0.03956592f, -0.42641863f, -0.48409465f), 3)
+                new Vertex(new Vector3(0.024775526f, -0.30819336f, -0.22845241f), 0),
+                new Vertex(new Vector3(-0.05953015f, -0.30819336f, -0.5218159f), 1),
+                new Vertex(new Vector3(-0.94930565f, -0.30819333f, -0.66625655f), 2),
+                new Vertex(new Vector3(-0.9272725f, -0.30819336f, -0.09660642f), 3),
+                new Vertex(new Vector3(-0.4098509f, -0.30819336f, -0.059736025f), 4)
             };
 
 
