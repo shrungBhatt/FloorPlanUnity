@@ -70,22 +70,13 @@ namespace Assets.Scripts
                         //Find the midpoint between these two corners, this point should be in screen coordinates
                         var midpoint = new Vector3((c1Pos.x + c2Pos.x) / 2, (c1Pos.y + c2Pos.y) / 2, c1Pos.z);
 
-
-                        Debug.Log($"horizontal: {EnableFreeMovement}");
-                        Debug.Log($"c1Pos: {transform.position}");
-                        //Find the angle between both the corners
-                        //Vector3 dir = c2Pos - c1Pos;
-                        //dir = otherCorner.transform.InverseTransformDirection(dir);
-                        //float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                        //float angle = CalculateAngle(transform.position, otherCorner.transform.position);
-
                         //Convert the screen coordinates to world co-ordinates.
                         var midPointScreenPos = ConvertScreenPositionToWorldPosition(midpoint);
 
                         //Translate the wall transform to the midpoint found in above step
                         wall.transform.position = new Vector3(midPointScreenPos.x, midPointScreenPos.y, wall.transform.position.z);
 
-
+                        //Find the angle between both the corners
                         var degree = AngleInDeg(c1Pos, c2Pos);
 
                         //Rotate the wall transform by that angle.
@@ -118,24 +109,6 @@ namespace Assets.Scripts
         public static float AngleInDeg(Vector3 vec1, Vector3 vec2)
         {
             return AngleInRad(vec1, vec2) * 180 / Mathf.PI;
-        }
-
-        static Vector2 RotatePoint(Vector2 pointToRotate, Vector2 centerPoint, double angleInDegrees)
-        {
-            double angleInRadians = angleInDegrees * (Math.PI / 180);
-            double cosTheta = Math.Cos(angleInRadians);
-            double sinTheta = Math.Sin(angleInRadians);
-            return new Vector2
-            {
-                x =
-                    (float)
-                    (cosTheta * (pointToRotate.x - centerPoint.x) -
-                    sinTheta * (pointToRotate.y - centerPoint.y) + centerPoint.x),
-                y =
-                    (float)
-                    (sinTheta * (pointToRotate.x - centerPoint.x) +
-                    cosTheta * (pointToRotate.y - centerPoint.y) + centerPoint.y)
-            };
         }
 
         protected override void OnMouseUp()
