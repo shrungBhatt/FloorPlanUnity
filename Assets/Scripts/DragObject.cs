@@ -7,7 +7,7 @@ namespace Assets.Scripts
         private Vector3 mOffset;
         private float mZCoord;
         protected bool IsHorizontalWall;
-        public bool EnableFreeMovement;
+        protected bool enableFreeMovement;
         Vector3 cachedPosition;
 
         void OnMouseDown()
@@ -17,7 +17,7 @@ namespace Assets.Scripts
             cachedPosition = Camera.main.WorldToScreenPoint(gameObject.transform.position);
 
             // Store offset = gameobject world pos - mouse world pos
-            mOffset = gameObject.transform.position - GetMouseAsWorldPoint();
+            mOffset = gameObject.transform.position - GetMouseAsWorldPoint(mZCoord);
         }
 
         protected virtual void OnMouseUp()
@@ -25,12 +25,12 @@ namespace Assets.Scripts
             PanZoom.DisablePanZoom = false;
         }
 
-        private Vector3 GetMouseAsWorldPoint()
+        protected virtual Vector3 GetMouseAsWorldPoint(float zCoord)
         {
 
             // Pixel coordinates of mouse (x,y)
             Vector3 mousePoint = Input.mousePosition;
-            if (!EnableFreeMovement)
+            if (!enableFreeMovement)
             {
                 if (IsHorizontalWall)
                 {
@@ -46,7 +46,7 @@ namespace Assets.Scripts
             
 
             // z coordinate of game object on screen
-            mousePoint.z = mZCoord;
+            mousePoint.z = zCoord;
 
             // Convert it to world points
             return Camera.main.ScreenToWorldPoint(mousePoint);
@@ -55,7 +55,7 @@ namespace Assets.Scripts
 
         protected virtual void OnMouseDrag()
         {
-            transform.position = GetMouseAsWorldPoint() + mOffset;
+            transform.position = GetMouseAsWorldPoint(mZCoord) + mOffset;
         }
 
     }
