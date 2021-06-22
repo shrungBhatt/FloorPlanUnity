@@ -25,7 +25,7 @@ namespace Assets.Scripts
             PanZoom.DisablePanZoom = false;
         }
 
-        protected virtual Vector3 GetMouseAsWorldPoint(float zCoord)
+        Vector3 GetMouseAsWorldPoint(float zCoord)
         {
 
             // Pixel coordinates of mouse (x,y)

@@ -50,16 +50,6 @@ namespace Assets.Scripts
             }
         }
 
-        protected override Vector3 GetMouseAsWorldPoint(float zCoord)
-        {
-            Vector3 mousePoint = Input.mousePosition;
-
-            // z coordinate of game object on screen
-            mousePoint.z = zCoord;
-
-            // Convert it to world points
-            return Camera.main.ScreenToWorldPoint(mousePoint);
-        }
 
         protected override void OnMouseDrag()
         {
