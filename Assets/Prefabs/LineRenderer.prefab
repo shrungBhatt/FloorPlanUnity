@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5413750178749567766}
   - component: {fileID: 7904842650375096596}
   - component: {fileID: 3058318798562305418}
-  - component: {fileID: 5094802529286299021}
+  - component: {fileID: 6091292614639553579}
   m_Layer: 0
   m_Name: LineRenderer
   m_TagString: Untagged
@@ -144,8 +144,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UseHorizontalDragLogic: 0
---- !u!68 &5094802529286299021
-EdgeCollider2D:
+--- !u!60 &6091292614639553579
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -158,11 +158,19 @@ EdgeCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0.28
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   m_Points:
-  - {x: -0.5, y: 0.85}
-  - {x: 0.5, y: 0.85}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
+    m_Paths:
+    - - {x: 0.11, y: 2.74}
+      - {x: -1.4307116, y: 1.6206075}
+      - {x: -0.84221196, y: -0.19060767}
+      - {x: 1.0622122, y: -0.19060743}
+      - {x: 1.6507115, y: 1.6206077}

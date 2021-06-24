@@ -21,7 +21,7 @@ public class Builder : MonoBehaviour
     List<GameObject> _rooms = new List<GameObject>();
     List<GameObject> _corners = new List<GameObject>();
     LineRenderer _lineRendererComponent;
-    EdgeCollider2D _lineEdgeCollider;
+    PolygonCollider2D _linePolygonCollider;
 
     // Start is called before the first frame update
     void Start()
@@ -35,7 +35,7 @@ public class Builder : MonoBehaviour
 
         var line = Instantiate(LineRenderer, new Vector3(0, 0, 0), Quaternion.identity);
         _lineRendererComponent = line.GetComponent<LineRenderer>();
-        _lineEdgeCollider = line.GetComponent<EdgeCollider2D>();
+        _linePolygonCollider = line.GetComponent<PolygonCollider2D>();
 
         _rooms.Add(CreateRoom("Main Room", 4, 4));
     }
@@ -107,7 +107,7 @@ public class Builder : MonoBehaviour
                     _lineRendererComponent.SetPosition(i, _corners[i].transform.position);
                     points.Add(new Vector2(_corners[i].transform.position.x, _corners[i].transform.position.y));
                 }
-                _lineEdgeCollider.points = points.ToArray();
+                _linePolygonCollider.points = points.ToArray();
             }
         }
     }
@@ -204,6 +204,75 @@ public class Builder : MonoBehaviour
             leftWallRectTransform.localScale = scale * 2;
         }
     }
+
+    #region LineRenderer Logic
+    private void LateUpdate()
+    {
+
+        //Get all the positions from the line renderer
+        Vector3[] positions = GetPositions();
+
+        //If we have enough points to draw a line
+        if (positions.Length >= 2)
+        {
+
+            //Get the number of line between two points
+            int numberOfLines = positions.Length - 1;
+
+            //Make as many paths for each different line as we have lines
+            _linePolygonCollider.pathCount = numberOfLines;
+
+            //Get Collider points between two consecutive points
+            for (int i = 0; i < numberOfLines; i++)
+            {
+                //Get the two next points
+                List<Vector2> currentPositions = new List<Vector2> {
+                    positions[i],
+                    positions[i+1]
+                };
+
+                List<Vector2> currentColliderPoints = CalculateColliderPoints(currentPositions);
+                _linePolygonCollider.SetPath(i, currentColliderPoints.ConvertAll(p => (Vector2)transform.InverseTransformPoint(p)));
+            }
+        }
+        else
+        {
+            _linePolygonCollider.pathCount = 0;
+        }
+    }
+
+
+    public Vector3[] GetPositions()
+    {
+        Vector3[] positions = new Vector3[_lineRendererComponent.positionCount];
+        _lineRendererComponent.GetPositions(positions);
+        return positions;
+    }
+    private List<Vector2> CalculateColliderPoints(List<Vector2> positions)
+    {
+        //Get The Width of the Line
+        float width = _lineRendererComponent.startWidth;
+
+        // m = (y2 - y1) / (x2 - x1)
+        float m = (positions[1].y - positions[0].y) / (positions[1].x - positions[0].x);
+        float deltaX = (width / 2f) * (m / Mathf.Pow(m * m + 1, 0.5f));
+        float deltaY = (width / 2f) * (1 / Mathf.Pow(1 + m * m, 0.5f));
+
+        //Calculate Vertex Offset from Line Point
+        Vector2[] offsets = new Vector2[2];
+        offsets[0] = new Vector2(-deltaX, deltaY);
+        offsets[1] = new Vector2(deltaX, -deltaY);
+
+        List<Vector2> colliderPoints = new List<Vector2> {
+            positions[0] + offsets[0],
+            positions[1] + offsets[0],
+            positions[1] + offsets[1],
+            positions[0] + offsets[1]
+        };
+
+        return colliderPoints;
+    }
+    #endregion
 
     // Update is called once per frame
 
