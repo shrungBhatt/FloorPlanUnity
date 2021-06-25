@@ -8,6 +8,10 @@ using static Assets.Scripts.Util;
 using static Assets.Scripts.Connector;
 using static Assets.Scripts.Wall;
 
+
+/// <summary>
+/// This script class is used for drawing non-rect rooms
+/// </summary>
 namespace Assets.Scripts
 {
     public class Builder01 : MonoBehaviour
@@ -20,15 +24,15 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            CreateRoom("Test room", 2, 1);
+            CreateRoom("Test room", 5);
         }
 
         private void Update()
         {
-            
+
         }
 
-        GameObject CreateRoom(string id, int corners, int walls)
+        GameObject CreateRoom(string id, int corners)
         {
             var room = Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity);
             room.name = id;
@@ -37,14 +41,25 @@ namespace Assets.Scripts
                 GameObject connector;
                 switch (i)
                 {
-                    
                     case 0:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(-2, 2, 2), Quaternion.identity);
-                        connector.name = TOP_LEFT_CORNER;
+                        connector = Instantiate(ConnectorPrefab, new Vector3(-2, -2, 2), Quaternion.identity);
+                        connector.name = "corner0";
                         break;
                     case 1:
+                        connector = Instantiate(ConnectorPrefab, new Vector3(-2, 2, 2), Quaternion.identity);
+                        connector.name = "corner1";
+                        break;
+                    case 2:
+                        connector = Instantiate(ConnectorPrefab, new Vector3(0, 4, 2), Quaternion.identity);
+                        connector.name = "corner2";
+                        break;
+                    case 3:
                         connector = Instantiate(ConnectorPrefab, new Vector3(2, 2, 2), Quaternion.identity);
-                        connector.name = TOP_RIGHT_CORNER;
+                        connector.name = "corner3";
+                        break;
+                    case 4:
+                        connector = Instantiate(ConnectorPrefab, new Vector3(2, -2, 2), Quaternion.identity);
+                        connector.name = "corner4";
                         break;
                     default:
                         connector = new GameObject("defaultConnector");
@@ -54,20 +69,28 @@ namespace Assets.Scripts
                 connectors.Add(connector);
             }
 
-            GenerateWalls(room, 4, connectors);
+            for (int i = 1; i < connectors.Count + 1; i++)
+            {
+                if(i != connectors.Count)
+                {
+                    GenerateWalls(room, connectors[i-1], connectors[i]);
+                }
+                else //Join the first and the last points
+                {
+                    GenerateWalls(room, connectors[connectors.Count - 1], connectors[0]);
+                }
+            }
+
 
             return room;
 
         }
 
-        void GenerateWalls(GameObject room, int noOfWalls, List<GameObject> connectors)
+        void GenerateWalls(GameObject room, GameObject cornerOne, GameObject cornerTwo)
         {
-            var topLeftCorner = connectors.Find(x => x.name.Equals(TOP_LEFT_CORNER));
-
-            var topRightCorner = connectors.Find(x => x.name.Equals(TOP_RIGHT_CORNER));
 
             var walls = new List<GameObject>();
-            walls.Add(GetWall(topLeftCorner.transform, topRightCorner.transform, true, TOP_WALL, room));
+            walls.Add(GetWall(cornerOne.transform, cornerTwo.transform, true, TOP_WALL, room));
 
             var roomScript = room.GetComponent<Room>();
             if (roomScript != null)
@@ -77,29 +100,29 @@ namespace Assets.Scripts
             }
         }
 
-        GameObject GetWall(Transform cornerOneRectTransform, Transform cornerTwoRectTransform, bool isHorizontal, string wallId, GameObject parent)
+        GameObject GetWall(Transform c1Transform, Transform c2Transform, bool isHorizontal, string wallId, GameObject parent)
         {
-            var c1ScreenPos = ConvertWorldPositionToScreenPosition(cornerOneRectTransform.position);
-            var c2ScreenPos = ConvertWorldPositionToScreenPosition(cornerTwoRectTransform.position);
+            var c1ScreenPos = ConvertWorldPositionToScreenPosition(c1Transform.position);
+            var c2ScreenPos = ConvertWorldPositionToScreenPosition(c2Transform.position);
 
             var wall = Instantiate(WallPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             wall.name = wallId;
             var wallScript = wall.GetComponent<Wall>();
             if (wallScript != null)
             {
-                wallScript.CornerOne = cornerOneRectTransform.gameObject;
-                wallScript.CornerTwo = cornerTwoRectTransform.gameObject;
+                wallScript.CornerOne = c1Transform.gameObject;
+                wallScript.CornerTwo = c2Transform.gameObject;
                 wallScript.IsHorizontal = isHorizontal;
             }
 
             //Add the wall reference in the corners
-            var c1ConnectorScript = cornerOneRectTransform.gameObject.GetComponent<Connector>();
+            var c1ConnectorScript = c1Transform.gameObject.GetComponent<Connector>();
             if (c1ConnectorScript != null)
             {
                 c1ConnectorScript.Walls.Add(wall);
             }
 
-            var c2ConnectorScript = cornerTwoRectTransform.gameObject.GetComponent<Connector>();
+            var c2ConnectorScript = c2Transform.gameObject.GetComponent<Connector>();
             if (c2ConnectorScript != null)
             {
                 c2ConnectorScript.Walls.Add(wall);
@@ -137,22 +160,16 @@ namespace Assets.Scripts
             wall.transform.position = ConvertScreenPositionToWorldPosition(wallPosition);
             wall.transform.SetParent(parent.transform);
 
-            var leftWallRectTransform = wall.transform as RectTransform;
-            if (leftWallRectTransform != null)
+            var cornerScript = c2Transform.gameObject.GetComponent<Connector>();
+            if (cornerScript != null)
             {
-                var scale = leftWallRectTransform.localScale;
-                if (isHorizontal)
-                {
-                    scale.x = cornerOneRectTransform.position.x > wall.transform.position.x ? cornerOneRectTransform.position.x - wall.transform.position.x : wall.transform.position.x - cornerOneRectTransform.position.x;
-                }
-                else
-                {
-                    scale.y = cornerOneRectTransform.position.y > wall.transform.position.y ? cornerOneRectTransform.position.y - wall.transform.position.y : wall.transform.position.y - cornerOneRectTransform.position.y;
-                }
-
-                leftWallRectTransform.localScale = scale * 2;
+                cornerScript.UpdateWallPosition(wall);
+                wallScript.ChangeWallScale(wall.transform, wall, c2Transform.gameObject);
             }
-
+            else
+            {
+                Debug.Log("The corner script is null");
+            }
 
             return wall;
         }

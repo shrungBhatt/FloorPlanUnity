@@ -43,7 +43,7 @@ namespace Assets.Scripts
                     }
                     else
                     {
-                        component?.UpdateScale(component.IsHorizontal, name, component.gameObject);
+                        component?.UpdateScale(name, component.gameObject);
                     }
 
                 }
@@ -57,46 +57,50 @@ namespace Assets.Scripts
             //For each wall conencted to this point
             foreach (var wall in Walls)
             {
-                //Find the other corner of the wall
-                var wallScript = wall.GetComponent<Wall>();
-                if (wallScript != null)
+                UpdateWallPosition(wall);
+            }
+
+        }
+
+        public void UpdateWallPosition(GameObject wall)
+        {
+            //Find the other corner of the wall
+            var wallScript = wall.GetComponent<Wall>();
+            if (wallScript != null)
+            {
+                var otherCorner = wallScript.GetOtherCorner(name);
+                if (otherCorner != null)
                 {
-                    var otherCorner = wallScript.GetOtherCorner(name);
-                    if (otherCorner != null)
-                    {
-                        var c1Pos = ConvertWorldPositionToScreenPosition(transform.position);
-                        var c2Pos = ConvertWorldPositionToScreenPosition(otherCorner.transform.position);
+                    var c1Pos = ConvertWorldPositionToScreenPosition(transform.position);
+                    var c2Pos = ConvertWorldPositionToScreenPosition(otherCorner.transform.position);
 
-                        //Find the midpoint between these two corners, this point should be in screen coordinates
-                        var midpoint = new Vector3((c1Pos.x + c2Pos.x) / 2, (c1Pos.y + c2Pos.y) / 2, c1Pos.z);
+                    //Find the midpoint between these two corners, this point should be in screen coordinates
+                    var midpoint = new Vector3((c1Pos.x + c2Pos.x) / 2, (c1Pos.y + c2Pos.y) / 2, c1Pos.z);
 
-                        //Convert the screen coordinates to world co-ordinates.
-                        var midPointScreenPos = ConvertScreenPositionToWorldPosition(midpoint);
+                    //Convert the screen coordinates to world co-ordinates.
+                    var midPointScreenPos = ConvertScreenPositionToWorldPosition(midpoint);
 
-                        //Translate the wall transform to the midpoint found in above step
-                        wall.transform.position = new Vector3(midPointScreenPos.x, midPointScreenPos.y, wall.transform.position.z);
+                    //Translate the wall transform to the midpoint found in above step
+                    wall.transform.position = new Vector3(midPointScreenPos.x, midPointScreenPos.y, wall.transform.position.z);
 
-                        //Find the angle between both the corners
-                        var degree = AngleInDeg(c1Pos, c2Pos);
+                    //Find the angle between both the corners
+                    var degree = AngleInDeg(c1Pos, c2Pos);
 
-                        //Rotate the wall transform by that angle.
-                        wall.transform.rotation = Quaternion.Euler(0, 0, degree);
+                    //Rotate the wall transform by that angle.
+                    wall.transform.rotation = Quaternion.Euler(0, 0, degree);
 
-                        Debug.Log($"angle: {degree}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Other corner is null");
-                    }
+                    //Update the scale of the wall
+                    wallScript.ChangeWallScale(wall.transform, wall, transform.gameObject);
                 }
                 else
                 {
-                    Debug.LogWarning("Wall script is null");
+                    Debug.LogWarning("Other corner is null");
                 }
-
-
             }
-
+            else
+            {
+                Debug.LogWarning("Wall script is null");
+            }
         }
 
         //This returns the angle in radians

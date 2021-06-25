@@ -62,7 +62,7 @@ namespace Assets.Scripts
             CornerTwo.GetComponent<Connector>()?.OnCornerPositionChanged(name);
         }
 
-        public void UpdateScale(bool isHorizontal, string cornerName, GameObject wall)
+        public void UpdateScale(string cornerName, GameObject wall)
         {
             if (CornerOne == null || CornerTwo == null)
             {
@@ -75,7 +75,7 @@ namespace Assets.Scripts
             var c2ScreenPos = ConvertWorldPositionToScreenPosition(CornerTwo.transform.position);
 
             Vector3 wallPosition = new Vector3(0, 0, 0);
-            if (isHorizontal)
+            if (IsHorizontal)
             {
                 wallPosition.x = (c1ScreenPos.x + c2ScreenPos.x) / 2;
                 wallPosition.y = c1ScreenPos.y;
@@ -91,17 +91,24 @@ namespace Assets.Scripts
 
             transform.position = ConvertScreenPositionToWorldPosition(wallPosition);
 
+            ChangeWallScale(transform, wall, corner);
+           
+        }
+
+        public void ChangeWallScale(Transform transform, GameObject wall, GameObject corner)
+        {
             var leftWallRectTransform = transform as RectTransform;
+
             if (leftWallRectTransform != null)
             {
                 var scale = leftWallRectTransform.localScale;
-                if (isHorizontal)
+                if (IsHorizontal)
                 {
-                    scale.x = (corner.transform.position.x > wall.transform.position.x ? corner.transform.position.x - wall.transform.position.x : wall.transform.position.x - corner.transform.position.x) * 2;
+                    scale.x = (corner.transform.position.x > wall.transform.position.x ? (corner.transform.position - wall.transform.position).magnitude : (wall.transform.position - corner.transform.position).magnitude) * 2;
                 }
                 else
                 {
-                    scale.y = (corner.transform.position.y > wall.transform.position.y ? corner.transform.position.y - wall.transform.position.y : wall.transform.position.y - corner.transform.position.y) * 2;
+                    scale.y = (corner.transform.position.y > wall.transform.position.y ? (corner.transform.position - wall.transform.position).magnitude : (wall.transform.position - corner.transform.position).magnitude) * 2;
 
                 }
 
