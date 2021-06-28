@@ -7,7 +7,8 @@ using UnityEngine;
 using static Assets.Scripts.Util;
 using static Assets.Scripts.Connector;
 using static Assets.Scripts.Wall;
-
+using Assets.Scripts.Models;
+using Newtonsoft.Json;
 
 /// <summary>
 /// This script class is used for drawing non-rect rooms
@@ -20,11 +21,15 @@ namespace Assets.Scripts
         public GameObject WallPrefab;
         public GameObject RoomPrefab;
         public GameObject MeasureLinePrefab;
+        public TextAsset FloorPlanJson;
 
         List<GameObject> connectors = new List<GameObject>();
 
         private void Start()
         {
+
+            var model = JsonConvert.DeserializeObject<FloorPlan>(FloorPlanJson.text);
+
             CreateRoom("Test room", 5);
         }
 

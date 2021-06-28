@@ -323,6 +323,7 @@ MonoBehaviour:
   WallPrefab: {fileID: 5258251683267508912, guid: 87387cb363db3034eaf510ced76fccfa, type: 3}
   RoomPrefab: {fileID: 5346013553105649000, guid: 7e8ff31885d307a4ab8b3c39fa4704bd, type: 3}
   MeasureLinePrefab: {fileID: 8940306054940072791, guid: 53caebf23ba8acb42b76d98e0adfadd5, type: 3}
+  FloorPlanJson: {fileID: 4900000, guid: 5906f4d00f2359145bca38be38aa17a1, type: 3}
 --- !u!114 &1484828902
 MonoBehaviour:
   m_ObjectHideFlags: 0

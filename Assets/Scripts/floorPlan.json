@@ -1,0 +1,504 @@
+{
+    "EAGLEVIEW_EXPORT": {
+      "VERSION": {
+        "@sourceVersion": "",
+        "@targetVersion": "",
+        "@precision": "",
+        "@coplanarity": "",
+        "@dormers": "",
+        "@precisionUnits": "",
+        "@triangulation": ""
+      },
+      "STRUCTURES": {
+        "@northorientation": "",
+        "ROOF": {
+          "FACES": {
+            "FACE": [
+              {
+                "@floorindex": "3",
+                "@designator": "DES1",
+                "@height": "5.10",
+                "@children": "WALL1,WALL2,WALL3,WALL4",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "Bedroom",
+                "@id": "ROOM1",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "",
+                  "@id": "",
+                  "@path": "",
+                  "@size": "",
+                  "@orientation": ""
+                },
+                "@floor": "Ground Floor",
+                "@type": "ROOM",
+                "@measuretype": "GLA"
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES1",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL1",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "5",
+                  "@id": "P1",
+                  "@path": "L1",
+                  "@size": "6.6",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES1",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL2",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "5.2",
+                  "@id": "P2",
+                  "@path": "L2",
+                  "@size": "6.6",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES1",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL3",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "5",
+                  "@id": "P3",
+                  "@path": "L3",
+                  "@size": "6.6",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES1",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL4",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "5.5",
+                  "@id": "P4",
+                  "@path": "L4",
+                  "@size": "6.6",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "3",
+                "@designator": "DES2",
+                "@height": "4.5",
+                "@children": "WALL5,WALL6,WALL7,WALL8",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "Furnace Room",
+                "@id": "ROOM2",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "",
+                  "@id": "",
+                  "@path": "",
+                  "@size": "",
+                  "@orientation": ""
+                },
+                "@floor": "Ground Floor",
+                "@type": "ROOM",
+                "@measuretype": "GLA"
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES2",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL5",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "10",
+                  "@id": "P5",
+                  "@path": "L5",
+                  "@size": "13.1",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES2",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL6",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "10.1",
+                  "@id": "P6",
+                  "@path": "L6",
+                  "@size": "13.1",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES2",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL7",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "10.6",
+                  "@id": "P7",
+                  "@path": "L7",
+                  "@size": "13.1",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES2",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL8",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "12.5",
+                  "@id": "P8",
+                  "@path": "L8",
+                  "@size": "13.1",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "3",
+                "@designator": "DES3",
+                "@height": "5.3",
+                "@children": "WALL9,WALL10,WALL11,WALL12",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "Attic / Loft",
+                "@id": "ROOM3",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "",
+                  "@id": "",
+                  "@path": "",
+                  "@size": "",
+                  "@orientation": ""
+                },
+                "@floor": "Ground Floor",
+                "@type": "ROOM",
+                "@measuretype": "GLA"
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES3",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL9",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "15.1",
+                  "@id": "P9",
+                  "@path": "L9",
+                  "@size": "16.4",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES3",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL10",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "14.5",
+                  "@id": "P10",
+                  "@path": "L10",
+                  "@size": "16.4",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES3",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL11",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "15",
+                  "@id": "P11",
+                  "@path": "L11",
+                  "@size": "16.4",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              },
+              {
+                "@floorindex": "",
+                "@designator": "DES3",
+                "@height": "",
+                "@children": "",
+                "@area": "",
+                "@mode": "",
+                "@areaname": "",
+                "@id": "WALL12",
+                "POLYGON": {
+                  "@pitch": "",
+                  "@unroundedsize": "12.8",
+                  "@id": "P12",
+                  "@path": "L12",
+                  "@size": "13.1",
+                  "@orientation": ""
+                },
+                "@floor": "",
+                "@type": "WALL",
+                "@measuretype": ""
+              }
+            ]
+          },
+          "POINTS": {
+            "POINT": [
+              {
+                "@id": "C1",
+                "@data": "-1.796218,-1.3212302,-1.0679849",
+                "@dataXY": "926.993225,1701.928711"
+              },
+              {
+                "@id": "C2",
+                "@data": "-0.24995565,-1.3316624,-1.1274482",
+                "@dataXY": "1081.733826,1701.928711"
+              },
+              {
+                "@id": "C3",
+                "@data": "-0.12577422,-1.3324692,0.4428746",
+                "@dataXY": "1088.108276,1859.322266"
+              },
+              {
+                "@id": "C4",
+                "@data": "-1.644754,-1.3244572,0.59111863",
+                "@dataXY": "935.752808,1868.298462"
+              },
+              {
+                "@id": "C5",
+                "@data": "-0.30338627,-1.163556,-0.7733611",
+                "@dataXY": "1116.027285,2291.624371"
+              },
+              {
+                "@id": "C6",
+                "@data": "2.1790226,-1.1979283,1.0269061",
+                "@dataXY": "809.379061,2291.624371"
+              },
+              {
+                "@id": "C7",
+                "@data": "0.17449258,-1.1883156,3.3765037",
+                "@dataXY": "833.711733,1983.735822"
+              },
+              {
+                "@id": "C8",
+                "@data": "-2.7677522,-1.2367854,2.1039834",
+                "@dataXY": "1146.602236,1914.017072"
+              },
+              {
+                "@id": "C9",
+                "@data": "0.21555896,-1.821112,-0.5366281",
+                "@dataXY": "1686.190451,2076.192887"
+              },
+              {
+                "@id": "C10",
+                "@data": "1.999125,-1.7859195,3.7112982",
+                "@dataXY": "1225.473715,2076.192887"
+              },
+              {
+                "@id": "C11",
+                "@data": "-1.882102,-1.7859195,5.8208504",
+                "@dataXY": "1181.220999,1636.667008"
+              },
+              {
+                "@id": "C12",
+                "@data": "-3.127753,-1.7859195,1.4186254",
+                "@dataXY": "1635.340109,1692.237565"
+              }
+            ]
+          },
+          "LINES": {
+            "LINE": [
+              {
+                "@angle": "0",
+                "@distance": "5",
+                "@path": "C1,C2",
+                "@type": "TOPWALL",
+                "@id": "L1"
+              },
+              {
+                "@angle": "0",
+                "@distance": "5.2",
+                "@path": "C2,C3",
+                "@type": "TOPWALL",
+                "@id": "L2"
+              },
+              {
+                "@angle": "0",
+                "@distance": "5",
+                "@path": "C3,C4",
+                "@type": "TOPWALL",
+                "@id": "L3"
+              },
+              {
+                "@angle": "0",
+                "@distance": "5.5",
+                "@path": "C4,C1",
+                "@type": "TOPWALL",
+                "@id": "L4"
+              },
+              {
+                "@angle": "0",
+                "@distance": "10",
+                "@path": "C5,C6",
+                "@type": "TOPWALL",
+                "@id": "L5"
+              },
+              {
+                "@angle": "0",
+                "@distance": "10.1",
+                "@path": "C6,C7",
+                "@type": "TOPWALL",
+                "@id": "L6"
+              },
+              {
+                "@angle": "0",
+                "@distance": "10.6",
+                "@path": "C7,C8",
+                "@type": "TOPWALL",
+                "@id": "L7"
+              },
+              {
+                "@angle": "0",
+                "@distance": "12.5",
+                "@path": "C8,C5",
+                "@type": "TOPWALL",
+                "@id": "L8"
+              },
+              {
+                "@angle": "0",
+                "@distance": "15.1",
+                "@path": "C9,C10",
+                "@type": "TOPWALL",
+                "@id": "L9"
+              },
+              {
+                "@angle": "0",
+                "@distance": "14.5",
+                "@path": "C10,C11",
+                "@type": "TOPWALL",
+                "@id": "L10"
+              },
+              {
+                "@angle": "0",
+                "@distance": "15",
+                "@path": "C11,C12",
+                "@type": "TOPWALL",
+                "@id": "L11"
+              },
+              {
+                "@angle": "0",
+                "@distance": "12.8",
+                "@path": "C12,C9",
+                "@type": "TOPWALL",
+                "@id": "L12"
+              }
+            ]
+          },
+          "@id": "ROOF1"
+        },
+        "@interiorWallThickness": "4.5",
+        "@exteriorWallThickness": "9.0"
+      },
+      "REPORT": {
+        "@claimId": "",
+        "@reportId": ""
+      },
+      "LOCATION": {
+        "@long": "",
+        "@postal": "",
+        "@state": "",
+        "@address": "",
+        "@city": "",
+        "@lat": ""
+      }
+    }
+  }
