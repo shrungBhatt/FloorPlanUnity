@@ -53,7 +53,7 @@ public class Builder : MonoBehaviour
             switch (i)
             {
                 case 0:
-                    connector = Instantiate(ConnectorPrefab, new Vector3(-2, -2, 2), Quaternion.identity);
+                    connector = Instantiate(ConnectorPrefab, new Vector3(-2, -3, 2), Quaternion.identity);
                     connector.name = BOTTOM_LEFT_CORNER;
                     break;
                 case 1:
@@ -61,7 +61,7 @@ public class Builder : MonoBehaviour
                     connector.name = TOP_LEFT_CORNER;
                     break;
                 case 2:
-                    connector = Instantiate(ConnectorPrefab, new Vector3(2, 2, 2), Quaternion.identity);
+                    connector = Instantiate(ConnectorPrefab, new Vector3(3, 2, 2), Quaternion.identity);
                     connector.name = TOP_RIGHT_CORNER;
                     break;
                 case 3:
@@ -235,12 +235,12 @@ public class Builder : MonoBehaviour
                     break;
             }
             measureLine.transform.SetParent(wall.transform);
-
-
         }
         
 
     }
+
+   
 
     // Update is called once per frame
     void Update()

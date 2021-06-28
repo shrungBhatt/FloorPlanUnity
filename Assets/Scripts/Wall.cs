@@ -19,6 +19,8 @@ namespace Assets.Scripts
 
         public GameObject CornerOne;
         public GameObject CornerTwo;
+        public GameObject MeasureLine;
+
         public bool IsHorizontal;
         // Start is called before the first frame update
         void Start()
@@ -126,6 +128,11 @@ namespace Assets.Scripts
             {
                 return CornerOne;
             }
+        }
+
+        public float GetDistanceBetween2Corners()
+        {
+            return (CornerOne.transform.position - CornerTwo.transform.position).magnitude;
         }
     }
 }

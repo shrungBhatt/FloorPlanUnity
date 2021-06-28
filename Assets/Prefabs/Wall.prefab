@@ -127,7 +127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 224c8f9aff1542c4ab06a33e01937851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnableFreeMovement: 0
   CornerOne: {fileID: 0}
   CornerTwo: {fileID: 0}
   IsHorizontal: 0

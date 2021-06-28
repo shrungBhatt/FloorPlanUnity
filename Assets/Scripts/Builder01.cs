@@ -19,6 +19,7 @@ namespace Assets.Scripts
         public GameObject ConnectorPrefab;
         public GameObject WallPrefab;
         public GameObject RoomPrefab;
+        public GameObject MeasureLinePrefab;
 
         List<GameObject> connectors = new List<GameObject>();
 
@@ -42,7 +43,7 @@ namespace Assets.Scripts
                 switch (i)
                 {
                     case 0:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(-2, -2, 2), Quaternion.identity);
+                        connector = Instantiate(ConnectorPrefab, new Vector3(-2, -3, 2), Quaternion.identity);
                         connector.name = "corner0";
                         break;
                     case 1:
@@ -54,7 +55,7 @@ namespace Assets.Scripts
                         connector.name = "corner2";
                         break;
                     case 3:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(2, 2, 2), Quaternion.identity);
+                        connector = Instantiate(ConnectorPrefab, new Vector3(2, 3, 2), Quaternion.identity);
                         connector.name = "corner3";
                         break;
                     case 4:
@@ -69,28 +70,21 @@ namespace Assets.Scripts
                 connectors.Add(connector);
             }
 
+            var walls = new List<GameObject>();
             for (int i = 1; i < connectors.Count + 1; i++)
             {
-                if(i != connectors.Count)
+                GameObject wall = null;
+                if (i != connectors.Count)
                 {
-                    GenerateWalls(room, connectors[i-1], connectors[i]);
+                    wall = GenerateWalls(room, connectors[i - 1], connectors[i], connectors[(i + 1) == connectors.Count ? 0 : (i + 1)]);
                 }
                 else //Join the first and the last points
                 {
-                    GenerateWalls(room, connectors[connectors.Count - 1], connectors[0]);
+                    wall = GenerateWalls(room, connectors[connectors.Count - 1], connectors[0], null);
                 }
+
+                walls.Add(wall);
             }
-
-
-            return room;
-
-        }
-
-        void GenerateWalls(GameObject room, GameObject cornerOne, GameObject cornerTwo)
-        {
-
-            var walls = new List<GameObject>();
-            walls.Add(GetWall(cornerOne.transform, cornerTwo.transform, true, TOP_WALL, room));
 
             var roomScript = room.GetComponent<Room>();
             if (roomScript != null)
@@ -98,6 +92,17 @@ namespace Assets.Scripts
                 roomScript.Corners = connectors;
                 roomScript.Walls = walls;
             }
+            return room;
+
+        }
+
+        GameObject GenerateWalls(GameObject room, GameObject cornerOne, GameObject cornerTwo, GameObject nextCorner)
+        {
+            var wall = GetWall(cornerOne.transform, cornerTwo.transform, true, TOP_WALL, room);
+            //Add the measure line
+            AddMeasureLine(wall, false, false);
+
+            return wall;
         }
 
         GameObject GetWall(Transform c1Transform, Transform c2Transform, bool isHorizontal, string wallId, GameObject parent)
@@ -173,5 +178,78 @@ namespace Assets.Scripts
 
             return wall;
         }
+
+        private void AddMeasureLine(GameObject wall, bool isBelow, bool isLeft)
+        {
+            var measureLine = Instantiate(MeasureLinePrefab, Vector3.zero, Quaternion.identity);
+
+            var wallScript = wall.GetComponent<Wall>();
+            if (wallScript != null)
+            {
+                wallScript.MeasureLine = measureLine;
+            }
+
+            if (measureLine != null)
+            {
+                var measureLineScript = measureLine.GetComponent<MeasureLine>();
+                measureLineScript.Wall = wall;
+                var offsetPostion = Vector3.zero;
+                const float offset = 20f;
+
+                measureLine.transform.position = wall.transform.position;
+                measureLine.transform.localScale = wall.transform.localScale;
+                measureLine.transform.localRotation = wall.transform.rotation;
+
+                var measureLineScreenPosition = ConvertWorldPositionToScreenPosition(measureLine.transform.position);
+                offsetPostion = ConvertScreenPositionToWorldPosition(new Vector3(measureLineScreenPosition.x, measureLineScreenPosition.y, measureLineScreenPosition.z));
+                measureLine.transform.position = offsetPostion;// + new Vector3(MeasureLine.OFFSET, 0, 0);
+
+                measureLine.transform.SetParent(wall.transform);
+
+
+            }
+
+
+        }
+
+        public bool IsLeft(Vector3 currentPoint, Vector3 nextPoint)
+        {
+            //Create two points for a line that is parallel to Y - Axis
+            var pointA = new Vector2();
+            pointA.x = currentPoint.x;
+            pointA.y = currentPoint.z + 50;
+
+            var pointB = new Vector2();
+            pointB.x = currentPoint.x;
+            pointB.y = currentPoint.z - 50;
+
+            var pointToCheck = new Vector2();
+            pointToCheck.x = nextPoint.x;
+            pointToCheck.y = nextPoint.z;
+
+
+            return ((pointB.x - pointA.x) * (pointToCheck.y - pointA.y) - (pointB.y - pointA.y) * (pointToCheck.x - pointA.x)) < 0;
+        }
+
+        public bool IsBelow(Vector3 currentPoint, Vector3 nextPoint)
+        {
+            //Create two points for a line that is parallel to X - Axis
+            var pointA = new Vector2();
+            pointA.x = currentPoint.x + 50;
+            pointA.y = currentPoint.z;
+
+            var pointB = new Vector2();
+            pointB.x = currentPoint.x - 50;
+            pointB.y = currentPoint.z;
+
+            var pointToCheck = new Vector2();
+            pointToCheck.x = nextPoint.x;
+            pointToCheck.y = nextPoint.z;
+
+
+            return ((pointB.x - pointA.x) * (pointToCheck.y - pointA.y) - (pointB.y - pointA.y) * (pointToCheck.x - pointA.x)) > 0;
+        }
     }
+
+
 }

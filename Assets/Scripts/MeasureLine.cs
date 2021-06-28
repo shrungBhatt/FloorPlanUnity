@@ -11,6 +11,8 @@ namespace Assets.Scripts
     public class MeasureLine : MonoBehaviour
     {
 
+        public static float OFFSET = 0.35f;
+
         public GameObject Wall;
         public bool IsHorizontal;
         public bool IsLeftWall;
@@ -46,26 +48,26 @@ namespace Assets.Scripts
             var distanceInFeetAndInch = ToFeetInches(distanceVector * 39.37f);
 
             var pos = Camera.main.WorldToScreenPoint(transform.position);
-            var text = $"{distanceInFeetAndInch.Key}′ {distanceInFeetAndInch.Value}′′";
+            var text = $"{distanceInFeetAndInch.Key}′ {distanceInFeetAndInch.Value.ToString("00")}′′";
             var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
             GUI.contentColor = Color.blue;
-            if (IsLeftWall || IsRightWall)
+
+
+            var rect = new Rect(pos.x - textSize.x / 1.5f, (Screen.height - pos.y) - textSize.y / 1.5f, textSize.x + 25, textSize.y + 10);
+            InitStyles((int)rect.width, (int)rect.height);
+            var matrixBackup = GUI.matrix;
+            var angle = 0f;
+            var wallScript = Wall.GetComponent<Wall>();
+            if(wallScript != null)
             {
-                var rect = new Rect(pos.x - textSize.y / 1.5f, (Screen.height - pos.y) + textSize.y / 0.9f, textSize.x + 20, textSize.y + 10);
-                InitStyles((int)rect.width, (int)rect.height);
-                var matrixBackup = GUI.matrix;
-                GUIUtility.RotateAroundPivot(270, new Vector2(rect.x, rect.y));
-                GUI.contentColor = Color.black;
-                GUI.Label(rect, text, currentStyle);
-                GUI.matrix = matrixBackup;
+                angle = wallScript.transform.rotation.z;
             }
-            else if (IsTopWall || IsBottomWall)
-            {
-                var rect = new Rect(pos.x - textSize.x / 1.5f, (Screen.height - pos.y) - textSize.y / 1.5f, textSize.x + 20, textSize.y + 10);
-                InitStyles((int)rect.width, (int)rect.height);
-                GUI.contentColor = Color.black;
-                GUI.Label(rect, text, currentStyle);
-            }
+            GUIUtility.RotateAroundPivot(angle, new Vector2(rect.x, rect.y));
+            GUI.contentColor = Color.black;
+            GUI.Label(rect, text, currentStyle);
+            GUI.matrix = matrixBackup;
+            GUI.contentColor = Color.black;
+            GUI.Label(rect, text, currentStyle);
 
 
         }
@@ -73,13 +75,10 @@ namespace Assets.Scripts
         float Length()
         {
             var length = 0.0f;
-            if (IsLeftWall || IsRightWall)
+            var wallScript = Wall.GetComponent<Wall>();
+            if(wallScript != null)
             {
-                length = Wall.transform.localScale.y;
-            }
-            else if (IsTopWall || IsBottomWall)
-            {
-                length = Wall.transform.localScale.x;
+                length = wallScript.GetDistanceBetween2Corners();
             }
 
             return length;
