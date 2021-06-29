@@ -136,11 +136,10 @@ namespace Assets.Scripts
 
         void DrawText()
         {
-            var pos = Camera.main.WorldToScreenPoint(transform.position);
+
+            var pos = GetCentroidOfPolygon(Corners.Select(x => ConvertWorldPositionToScreenPosition(x.transform.position)).ToList());
             var text = $"{name}";
             var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
-            GUI.contentColor = Color.blue;
-
 
             var rect = new Rect(pos.x - textSize.x / 1.5f, (Screen.height - pos.y) - textSize.y / 1.5f, textSize.x + 25, textSize.y + 10);
             InitStyles((int)rect.width, (int)rect.height);
@@ -171,6 +170,33 @@ namespace Assets.Scripts
             result.SetPixels(pix);
             result.Apply();
             return result;
+        }
+
+        public Vector3 GetCentroidOfPolygon(List<Vector3> vertices)
+        {
+            var centroid = new Vector3();
+
+            float accumulatedArea = 0.0f;
+            float centerX = 0.0f;
+            float centerY = 0.0f;
+
+            for (int i = 0, j = vertices.Count - 1; i < vertices.Count; j = i++)
+            {
+                float temp = vertices[i].x * vertices[j].y - vertices[j].x * vertices[i].y;
+                accumulatedArea += temp;
+                centerX += (vertices[i].x + vertices[j].x) * temp;
+                centerY += (vertices[i].y + vertices[j].y) * temp;
+            }
+
+            //The area should not be zero.
+            if (Math.Abs(accumulatedArea) < 1E-7f)
+                return centroid;
+
+            accumulatedArea *= 3f;
+            centroid.x = centerX / accumulatedArea;
+            centroid.y = centerY / accumulatedArea;
+
+            return centroid;
         }
     }
 }

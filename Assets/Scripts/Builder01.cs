@@ -117,7 +117,7 @@ namespace Assets.Scripts
             {
                 var room = Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity);
                 room.name = key.AreaName;
-                connectors.Clear();
+                connectors = new List<GameObject>();
 
                 var corners = RoomCornersDictionary[key];
                 if (corners != null)
