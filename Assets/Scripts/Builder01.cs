@@ -112,7 +112,7 @@ namespace Assets.Scripts
 
         void CreateRooms()
         {
-
+            var offsetPostion = Vector3.zero;
             foreach (var key in RoomCornersDictionary.Keys)
             {
                 var room = Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity);
@@ -156,8 +156,19 @@ namespace Assets.Scripts
                 {
                     roomScript.Corners = connectors;
                     roomScript.Walls = walls;
+                    roomScript.offsetPosition = offsetPostion;
                 }
+
+                offsetPostion += CalculateOffsetPostion(room);
             }
+        }
+
+        private Vector3 CalculateOffsetPostion(GameObject room)
+        {
+            float maxXPos = room.transform.position.x + room.transform.localScale.x / 2;
+            var position = new Vector3(maxXPos + 3, 0, 0);
+
+            return position;
         }
 
         GameObject GenerateWalls(GameObject room, GameObject cornerOne, GameObject cornerTwo, GameObject nextCorner, string wallId)

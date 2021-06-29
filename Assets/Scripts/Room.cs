@@ -16,6 +16,7 @@ namespace Assets.Scripts
         public List<GameObject> Corners = new List<GameObject>();
         public List<GameObject> Walls = new List<GameObject>();
         public GameObject BackgroundPrefab;
+        public Vector3 offsetPosition;
 
         PolygonCollider2D _collider;
         GameObject _backgroundGrid;
@@ -29,6 +30,8 @@ namespace Assets.Scripts
             _backgroundGrid.transform.SetParent(transform);
             AlignTheRoom();
             SetupColliderPoints();
+            transform.position += offsetPosition;
+            //transform.position = GetCentroidOfPolygon(Corners.Select(x => x.transform.position).ToList());
         }
 
         private void AlignTheRoom()
@@ -46,7 +49,7 @@ namespace Assets.Scripts
 
                     var offsetAngle = (float) (isPositiveSlope ? 360 - degree : 180 - degree);
 
-                    transform.rotation = Quaternion.Euler(0, 0, offsetAngle + 180f);
+                    transform.rotation = Quaternion.Euler(0, 0, offsetAngle);
                 }
                 
             }
