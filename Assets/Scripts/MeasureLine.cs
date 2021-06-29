@@ -60,14 +60,14 @@ namespace Assets.Scripts
             var wallScript = Wall.GetComponent<Wall>();
             if(wallScript != null)
             {
-                angle = wallScript.transform.rotation.z;
+                angle = wallScript.Angle > 0 ? wallScript.Angle : 360f + wallScript.Angle;
             }
-            GUIUtility.RotateAroundPivot(angle, new Vector2(rect.x, rect.y));
+            //GUIUtility.RotateAroundPivot(angle, new Vector2(rect.x, rect.y));
             GUI.contentColor = Color.black;
             GUI.Label(rect, text, currentStyle);
             GUI.matrix = matrixBackup;
             GUI.contentColor = Color.black;
-            GUI.Label(rect, text, currentStyle);
+            //GUI.Label(rect, text, currentStyle);
 
 
         }

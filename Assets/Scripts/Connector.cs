@@ -89,6 +89,8 @@ namespace Assets.Scripts
                     //Rotate the wall transform by that angle.
                     wall.transform.rotation = Quaternion.Euler(0, 0, degree);
 
+                    wallScript.Angle = degree;
+
                     if (wallScript.MeasureLine != null)
                     {
                         wallScript.MeasureLine.transform.position = wall.transform.position; //+ new Vector3(MeasureLine.OFFSET, 0, 0);

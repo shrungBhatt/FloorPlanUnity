@@ -20,6 +20,7 @@ namespace Assets.Scripts
         public GameObject CornerOne;
         public GameObject CornerTwo;
         public GameObject MeasureLine;
+        public float Angle;
 
         public bool IsHorizontal;
         // Start is called before the first frame update
