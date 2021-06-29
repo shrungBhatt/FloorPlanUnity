@@ -27,7 +27,29 @@ namespace Assets.Scripts
             _backgroundGrid.name = "background";
             enableFreeMovement = true;
             _backgroundGrid.transform.SetParent(transform);
+            AlignTheRoom();
             SetupColliderPoints();
+        }
+
+        private void AlignTheRoom()
+        {
+            if(Corners != null)
+            {
+                if(Corners.Count > 2)
+                {
+                    var firstCorner = Corners[0];
+                    var secondCorner = Corners[1];
+
+                    var slope = (secondCorner.transform.position.y - firstCorner.transform.position.y) / (secondCorner.transform.position.x - firstCorner.transform.position.x);
+                    bool isPositiveSlope = slope >= 0;
+                    var degree = Math.Atan(slope) * 180 / Math.PI;
+
+                    var offsetAngle = (float) (isPositiveSlope ? 360 - degree : 180 - degree);
+
+                    transform.rotation = Quaternion.Euler(0, 0, offsetAngle + 180f);
+                }
+                
+            }
         }
 
         private void Update()
