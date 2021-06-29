@@ -17,6 +17,9 @@ namespace Assets.Scripts
 {
     public class Builder01 : MonoBehaviour
     {
+
+        const float ZOOM_FACTOR = 2f;
+
         public GameObject ConnectorPrefab;
         public GameObject WallPrefab;
         public GameObject RoomPrefab;
@@ -24,13 +27,82 @@ namespace Assets.Scripts
         public TextAsset FloorPlanJson;
 
         List<GameObject> connectors = new List<GameObject>();
+        Dictionary<Face, List<Point>> RoomCornersDictionary = new Dictionary<Face, List<Point>>();
 
         private void Start()
         {
 
+            InitRoomDictionary();
+
+            CreateRooms();
+        }
+
+        private void InitRoomDictionary()
+        {
             var model = JsonConvert.DeserializeObject<FloorPlan>(FloorPlanJson.text);
 
-            CreateRoom("Test room", 5);
+            //Get all the room in the faces
+            var faces = model.EagleViewExport.Structures.Roof.Faces;
+
+            var rooms = faces?.Face?.FindAll(x => (bool)x.Type?.Equals("ROOM"));
+            //Get all the walls in the faces
+            if (rooms != null)
+            {
+                foreach (var room in rooms)
+                {
+                    var corners = new List<Point>();
+                    var walls = room.Children.Split(',');
+                    if (walls != null)
+                    {
+                        foreach (var wall in walls)
+                        {
+                            var wallFace = faces?.Face?.Find(x => x.Id.Equals(wall));
+                            if (wallFace != null)
+                            {
+                                var line = model.EagleViewExport.Structures.Roof.Lines.Line.Find(x => x.Id.Equals(wallFace.Polygon.Path));
+                                if (line != null)
+                                {
+                                    var points = line.Path.Split(',');
+                                    if (points != null)
+                                    {
+                                        foreach (var point in points)
+                                        {
+                                            var pointCoord = model.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(point));
+                                            if (pointCoord != null)
+                                            {
+                                                if (!corners.Contains(pointCoord))
+                                                    corners.Add(pointCoord);
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    RoomCornersDictionary.Add(room, corners);
+                }
+            }
+        }
+
+        Vector3 Get3DCoordinates(string coordinates)
+        {
+            var coords = coordinates.Split(',');
+            var vectorCoords = Vector3.zero;
+            if (coords.Length == 3)
+            {
+                float x = float.Parse(coords[0]);
+                float y = float.Parse(coords[1]);
+                float z = float.Parse(coords[2]);
+                //In 3D world z-coordinate is treated as the y-coordinate
+                vectorCoords = new Vector3(x, z, y);
+            }
+            else
+            {
+                Debug.Log("The 3D co-ordinates are invalid");
+            }
+
+            return vectorCoords;
         }
 
         private void Update()
@@ -38,72 +110,59 @@ namespace Assets.Scripts
 
         }
 
-        GameObject CreateRoom(string id, int corners)
+        void CreateRooms()
         {
-            var room = Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity);
-            room.name = id;
-            for (int i = 0; i < corners; i++)
-            {
-                GameObject connector;
-                switch (i)
-                {
-                    case 0:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(-2, -3, 2), Quaternion.identity);
-                        connector.name = "corner0";
-                        break;
-                    case 1:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(-2, 2, 2), Quaternion.identity);
-                        connector.name = "corner1";
-                        break;
-                    case 2:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(0, 4, 2), Quaternion.identity);
-                        connector.name = "corner2";
-                        break;
-                    case 3:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(2, 3, 2), Quaternion.identity);
-                        connector.name = "corner3";
-                        break;
-                    case 4:
-                        connector = Instantiate(ConnectorPrefab, new Vector3(2, -2, 2), Quaternion.identity);
-                        connector.name = "corner4";
-                        break;
-                    default:
-                        connector = new GameObject("defaultConnector");
-                        break;
-                }
-                connector.transform.SetParent(room.transform);
-                connectors.Add(connector);
-            }
 
-            var walls = new List<GameObject>();
-            for (int i = 1; i < connectors.Count + 1; i++)
+            foreach (var key in RoomCornersDictionary.Keys)
             {
-                GameObject wall = null;
-                if (i != connectors.Count)
+                var room = Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity);
+                room.name = key.AreaName;
+                connectors.Clear();
+
+                var corners = RoomCornersDictionary[key];
+                if (corners != null)
                 {
-                    wall = GenerateWalls(room, connectors[i - 1], connectors[i], connectors[(i + 1) == connectors.Count ? 0 : (i + 1)]);
-                }
-                else //Join the first and the last points
-                {
-                    wall = GenerateWalls(room, connectors[connectors.Count - 1], connectors[0], null);
+                    foreach (var corner in corners)
+                    {
+                        var coords = Get3DCoordinates(corner.Data);
+                        var connector = Instantiate(ConnectorPrefab, coords, Quaternion.identity);
+                        connector.name = corner.Id;
+                        connector.transform.SetParent(room.transform);
+                        connectors.Add(connector);
+                    }
                 }
 
-                walls.Add(wall);
-            }
+                var walls = new List<GameObject>();
+                for (int i = 1; i < connectors.Count + 1; i++)
+                {
+                    GameObject wall = null;
+                    if (i != connectors.Count)
+                    {
+                        wall = GenerateWalls(room, connectors[i - 1],
+                                             connectors[i],
+                                             connectors[(i + 1) == connectors.Count ? 0 : (i + 1)],
+                                             $"Wall{i}");
+                    }
+                    else //Join the first and the last points
+                    {
+                        wall = GenerateWalls(room, connectors[connectors.Count - 1], connectors[0], null, $"Wall{i}");
+                    }
 
-            var roomScript = room.GetComponent<Room>();
-            if (roomScript != null)
-            {
-                roomScript.Corners = connectors;
-                roomScript.Walls = walls;
-            }
-            return room;
+                    walls.Add(wall);
+                }
 
+                var roomScript = room.GetComponent<Room>();
+                if (roomScript != null)
+                {
+                    roomScript.Corners = connectors;
+                    roomScript.Walls = walls;
+                }
+            }
         }
 
-        GameObject GenerateWalls(GameObject room, GameObject cornerOne, GameObject cornerTwo, GameObject nextCorner)
+        GameObject GenerateWalls(GameObject room, GameObject cornerOne, GameObject cornerTwo, GameObject nextCorner, string wallId)
         {
-            var wall = GetWall(cornerOne.transform, cornerTwo.transform, true, TOP_WALL, room);
+            var wall = GetWall(cornerOne.transform, cornerTwo.transform, true, wallId, room);
             //Add the measure line
             AddMeasureLine(wall, false, false);
 

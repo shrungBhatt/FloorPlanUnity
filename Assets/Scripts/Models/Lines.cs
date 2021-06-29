@@ -9,6 +9,12 @@ namespace Assets.Scripts.Models
 {
     public class Lines
     {
+        [JsonProperty("LINE")]
+        public List<Line> Line { get; set; }
+    }
+
+    public class Line
+    {
         [JsonProperty("@id")]
         public string Id { get; set; }
 
