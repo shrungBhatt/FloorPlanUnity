@@ -1,14 +1,8 @@
-﻿using System;
+﻿using Assets.Scripts.Models;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using static Assets.Scripts.Util;
-using static Assets.Scripts.Connector;
-using static Assets.Scripts.Wall;
-using Assets.Scripts.Models;
-using Newtonsoft.Json;
 
 /// <summary>
 /// This script class is used for drawing non-rect rooms
@@ -26,23 +20,66 @@ namespace Assets.Scripts
         public GameObject MeasureLinePrefab;
         public TextAsset FloorPlanJson;
 
-        List<GameObject> connectors = new List<GameObject>();
-        Dictionary<Face, List<Point>> RoomCornersDictionary = new Dictionary<Face, List<Point>>();
+        List<GameObject> _connectors = new List<GameObject>();
+        Dictionary<Face, List<Point>> _roomCornersDictionary = new Dictionary<Face, List<Point>>();
+        static FloorPlan _floorPlan;
+        DeviceInfoModel _deviceInfoModel;
+        List<GameObject> _rooms = new List<GameObject>();
 
+        #region Lifecycle Methods
         private void Start()
         {
-
-            InitRoomDictionary();
-
+            _deviceInfoModel = new DeviceInfoModel
+            {
+                ScreenWidth = 1440,
+                ScreenHeight = 3200,
+                ZoomFactor = 120
+            };
+            InitRoomDictionary(FloorPlanJson.text);
             CreateRooms();
         }
-
-        private void InitRoomDictionary()
+        private void Update()
         {
-            var model = JsonConvert.DeserializeObject<FloorPlan>(FloorPlanJson.text);
+        }
+        #endregion
+
+        #region Methods used for communication
+
+        #region Unity To Android
+        public void SendFloorPlanToDevice()
+        {
+            AndroidJavaClass androidJavaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject javaObject = androidJavaClass?.GetStatic<AndroidJavaObject>("currentActivity");
+
+            javaObject?.Call("OnFloorPlanReceived", GetUpdatedFloorPlan());
+        }
+        #endregion
+
+        #region Android To Unity
+        public void OnFloorPlanReceived(string jsonContent)
+        {
+            InitRoomDictionary(jsonContent);
+            CreateRooms();
+        }
+        public void SetDeviceInfoParameters(string jsonContent)
+        {
+            _deviceInfoModel = JsonConvert.DeserializeObject<DeviceInfoModel>(jsonContent);
+            if (_deviceInfoModel == null)
+            {
+                Debug.LogError("The Device Info Model is not set");
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region UI Builder Methods
+        void InitRoomDictionary(string jsonContent)
+        {
+            _floorPlan = JsonConvert.DeserializeObject<FloorPlan>(jsonContent);
 
             //Get all the room in the faces
-            var faces = model.EagleViewExport.Structures.Roof.Faces;
+            var faces = _floorPlan.EagleViewExport.Structures.Roof.Faces;
 
             var rooms = faces?.Face?.FindAll(x => (bool)x.Type?.Equals("ROOM"));
             //Get all the walls in the faces
@@ -59,7 +96,7 @@ namespace Assets.Scripts
                             var wallFace = faces?.Face?.Find(x => x.Id.Equals(wall));
                             if (wallFace != null)
                             {
-                                var line = model.EagleViewExport.Structures.Roof.Lines.Line.Find(x => x.Id.Equals(wallFace.Polygon.Path));
+                                var line = _floorPlan.EagleViewExport.Structures.Roof.Lines.Line.Find(x => x.Id.Equals(wallFace.Polygon.Path));
                                 if (line != null)
                                 {
                                     var points = line.Path.Split(',');
@@ -67,7 +104,7 @@ namespace Assets.Scripts
                                     {
                                         foreach (var point in points)
                                         {
-                                            var pointCoord = model.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(point));
+                                            var pointCoord = _floorPlan.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(point));
                                             if (pointCoord != null)
                                             {
                                                 if (!corners.Contains(pointCoord))
@@ -80,72 +117,58 @@ namespace Assets.Scripts
                             }
                         }
                     }
-                    RoomCornersDictionary.Add(room, corners);
+                    _roomCornersDictionary.Add(room, corners);
+
                 }
             }
-        }
-
-        Vector3 Get3DCoordinates(string coordinates)
-        {
-            var coords = coordinates.Split(',');
-            var vectorCoords = Vector3.zero;
-            if (coords.Length == 3)
-            {
-                float x = float.Parse(coords[0]);
-                float y = float.Parse(coords[1]);
-                float z = float.Parse(coords[2]);
-                //In 3D world z-coordinate is treated as the y-coordinate
-                vectorCoords = new Vector3(x, z, y);
-            }
-            else
-            {
-                Debug.Log("The 3D co-ordinates are invalid");
-            }
-
-            return vectorCoords;
-        }
-
-        private void Update()
-        {
-
         }
 
         void CreateRooms()
         {
             var offsetPostion = Vector3.zero;
-            foreach (var key in RoomCornersDictionary.Keys)
+            foreach (var key in _roomCornersDictionary.Keys)
             {
                 var room = Instantiate(RoomPrefab, Vector3.zero, Quaternion.identity);
                 room.name = key.AreaName;
-                connectors = new List<GameObject>();
+                _connectors = new List<GameObject>();
 
-                var corners = RoomCornersDictionary[key];
+                var corners = _roomCornersDictionary[key];
                 if (corners != null)
                 {
                     foreach (var corner in corners)
                     {
-                        var coords = Get3DCoordinates(corner.Data);
+                        var coords = Vector3.zero;
+
+                        if (!string.IsNullOrEmpty(corner.DataXY))
+                        {
+                            coords = Get3DPointFrom2DPoint(_deviceInfoModel.ZoomFactor, Get2DCoordinates(corner.DataXY), _deviceInfoModel.ScreenWidth, _deviceInfoModel.ScreenHeight);
+                        }
+                        else
+                        {
+                            coords = Get3DCoordinates(corner.Data);
+                        }
+
                         var connector = Instantiate(ConnectorPrefab, coords, Quaternion.identity);
                         connector.name = corner.Id;
                         connector.transform.SetParent(room.transform);
-                        connectors.Add(connector);
+                        _connectors.Add(connector);
                     }
                 }
 
                 var walls = new List<GameObject>();
-                for (int i = 1; i < connectors.Count + 1; i++)
+                for (int i = 1; i < _connectors.Count + 1; i++)
                 {
                     GameObject wall = null;
-                    if (i != connectors.Count)
+                    if (i != _connectors.Count)
                     {
-                        wall = GenerateWalls(room, connectors[i - 1],
-                                             connectors[i],
-                                             connectors[(i + 1) == connectors.Count ? 0 : (i + 1)],
+                        wall = GenerateWalls(room, _connectors[i - 1],
+                                             _connectors[i],
+                                             _connectors[(i + 1) == _connectors.Count ? 0 : (i + 1)],
                                              $"Wall{i}");
                     }
                     else //Join the first and the last points
                     {
-                        wall = GenerateWalls(room, connectors[connectors.Count - 1], connectors[0], null, $"Wall{i}");
+                        wall = GenerateWalls(room, _connectors[_connectors.Count - 1], _connectors[0], null, $"Wall{i}");
                     }
 
                     walls.Add(wall);
@@ -154,21 +177,14 @@ namespace Assets.Scripts
                 var roomScript = room.GetComponent<Room>();
                 if (roomScript != null)
                 {
-                    roomScript.Corners = connectors;
+                    roomScript.Corners = _connectors;
                     roomScript.Walls = walls;
                     roomScript.offsetPosition = offsetPostion;
                 }
 
                 offsetPostion += CalculateOffsetPostion(room);
+                _rooms.Add(room);
             }
-        }
-
-        private Vector3 CalculateOffsetPostion(GameObject room)
-        {
-            float maxXPos = room.transform.position.x + room.transform.localScale.x / 2;
-            var position = new Vector3(maxXPos + 3, 0, 0);
-
-            return position;
         }
 
         GameObject GenerateWalls(GameObject room, GameObject cornerOne, GameObject cornerTwo, GameObject nextCorner, string wallId)
@@ -254,7 +270,7 @@ namespace Assets.Scripts
             return wall;
         }
 
-        private void AddMeasureLine(GameObject wall, bool isBelow, bool isLeft)
+        void AddMeasureLine(GameObject wall, bool isBelow, bool isLeft)
         {
             var measureLine = Instantiate(MeasureLinePrefab, Vector3.zero, Quaternion.identity);
 
@@ -285,6 +301,89 @@ namespace Assets.Scripts
             }
 
 
+        }
+        #endregion
+
+        #region Util Methods
+        string GetUpdatedFloorPlan()
+        {
+            foreach (var room in _rooms)
+            {
+                var roomScript = room.GetComponent<Room>();
+                if (roomScript != null)
+                {
+                    foreach (var corner in roomScript.Corners)
+                    {
+                        var planCorner = _floorPlan.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(corner.name));
+                        if (planCorner != null)
+                        {
+                            planCorner.Data = Get3DCoordinatesString(corner.transform.position);
+
+                            var coord = Get2DPointFrom3DPoint(_deviceInfoModel.ZoomFactor, corner.transform.position, _deviceInfoModel.ScreenWidth, _deviceInfoModel.ScreenHeight);
+                            planCorner.DataXY = Get2DCoordinatesString(coord);
+                        }
+                    }
+                }
+            }
+
+            return JsonConvert.SerializeObject(_floorPlan);
+        }
+
+        Vector3 Get3DCoordinates(string coordinates)
+        {
+            var coords = coordinates.Split(',');
+            var vectorCoords = Vector3.zero;
+            if (coords.Length == 3)
+            {
+                float x = float.Parse(coords[0]);
+                float y = float.Parse(coords[1]);
+                float z = float.Parse(coords[2]);
+                //In 3D world z-coordinate is treated as the y-coordinate
+                vectorCoords = new Vector3(x, z, y);
+            }
+            else
+            {
+                Debug.Log("The 3D co-ordinates are invalid");
+            }
+
+            return vectorCoords;
+        }
+
+        Vector2 Get2DCoordinates(string coordinates)
+        {
+            var coords = coordinates.Split(',');
+            var vectorCoords = Vector3.zero;
+            if (coords.Length == 2)
+            {
+                float x = float.Parse(coords[0]);
+                float y = float.Parse(coords[1]);
+                //In 3D world z-coordinate is treated as the y-coordinate
+                vectorCoords = new Vector2(x, y);
+            }
+            else
+            {
+                Debug.Log("The 2D co-ordinates are invalid");
+            }
+
+            return vectorCoords;
+        }
+
+        string Get3DCoordinatesString(Vector3 coordinates)
+        {
+            return string.Join(",", new float[] { coordinates.x, coordinates.z, coordinates.y });
+        }
+
+        string Get2DCoordinatesString(Vector3 coordinates)
+        {
+            return string.Join(",", new float[] { coordinates.x, coordinates.y });
+        }
+
+        private Vector3 CalculateOffsetPostion(GameObject room)
+        {
+            float maxXPos = room.transform.position.x + room.transform.localScale.x / 2;
+            var position = new Vector3(maxXPos + 3, 0, 0);
+
+            return position;
         }
 
         public bool IsLeft(Vector3 currentPoint, Vector3 nextPoint)
@@ -324,6 +423,37 @@ namespace Assets.Scripts
 
             return ((pointB.x - pointA.x) * (pointToCheck.y - pointA.y) - (pointB.y - pointA.y) * (pointToCheck.x - pointA.x)) > 0;
         }
+
+        public Vector2 Get2DPointFrom3DPoint(int zoomFactor, Vector3 point, int screenWidth, int screenHeight)
+        {
+            var vector2 = new Vector2();
+
+            vector2.x = zoomFactor * point.x + screenWidth / 2;
+            vector2.y = screenHeight / 2 - zoomFactor * point.z;
+
+            return vector2;
+        }
+
+        public Vector3 Get3DPointFrom2DPoint(int zoomFactor, Vector2 point, int screenWidth, int screenHeight)
+        {
+            var vector3 = new Vector3();
+
+            vector3.x = (point.x - (screenWidth / 2)) / zoomFactor;
+            vector3.y = -(point.y - (screenHeight / 2)) / zoomFactor;
+
+            return vector3;
+        }
+
+        public string Get3DPointFrom2DPointString(int zoomFactor, Vector2 point, int screenWidth, int screenHeight)
+        {
+            var vector3 = new Vector3();
+
+            vector3.x = (point.x - (screenWidth / 2)) / zoomFactor;
+            vector3.z = -(point.y - (screenHeight / 2)) / zoomFactor;
+
+            return Get3DCoordinatesString(vector3);
+        }
+        #endregion
     }
 
 

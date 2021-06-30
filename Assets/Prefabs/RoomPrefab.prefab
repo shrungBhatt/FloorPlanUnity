@@ -47,6 +47,7 @@ MonoBehaviour:
   Corners: []
   Walls: []
   BackgroundPrefab: {fileID: 5591762342584465638, guid: 49166f033e906fa4e924213d56147139, type: 3}
+  offsetPosition: {x: 0, y: 0, z: 0}
 --- !u!60 &5555509880769876630
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -54,7 +55,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5346013553105649000}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0

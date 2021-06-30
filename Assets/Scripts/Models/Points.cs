@@ -20,5 +20,8 @@ namespace Assets.Scripts.Models
 
         [JsonProperty("@id")]
         public string Id { get; set; }
+
+        [JsonProperty("@dataXY")]
+        public string DataXY { get; set; }
     }
 }
