@@ -28,12 +28,14 @@ namespace Assets.Scripts
             _backgroundGrid.name = "background";
             enableFreeMovement = true;
             _backgroundGrid.transform.SetParent(transform);
-            PivotTo(GetCentroidOfPolygon(Corners.Select(x => x.transform.position).ToList()));
+            var centroid = GetCentroidOfPolygon(Corners.Select(x => x.transform.position).ToList());
+            PivotTo(centroid, transform);
+            
             AlignTheRoom();
             SetupColliderPoints();
         }
 
-        public void PivotTo(Vector3 position)
+        public void PivotTo(Vector3 position, Transform transform)
         {
             Vector3 offset = transform.position - position;
             foreach (Transform child in transform)
@@ -97,15 +99,16 @@ namespace Assets.Scripts
 
                 //Set the background prefab transform position
                 // X = (rightWall.x + leftWall.x)/2, Y = rightWall.y, Z = rightWall.z
-                var position = new Vector3((rightWallPos.x + leftWallPos.x) / 2, ((topWallPos.y + bottomWallPos.y)) / 2, topWallPos.z);
+                //var position = transform.position;
 
-                //Convert the position from Screen -> World position
-                var worldPos = ConvertScreenPositionToWorldPosition(position);
-                _backgroundGrid.transform.position = worldPos;
-                //_collider.offset = new Vector2(worldPos.x - _collider.transform.position.x, worldPos.y - _collider.transform.position.y);
+                ////Convert the position from Screen -> World position
+                var screenPos = transform.position;
+                _backgroundGrid.transform.position = screenPos;
+                var bounds = _collider.bounds;
+                _collider.offset = new Vector2(screenPos.x - (_collider.transform.position.x * 2), screenPos.y - (_collider.transform.position.y * 2));
 
                 SetupColliderPoints();
-
+                
                 //Change the local scale
                 // X = topWallScale.x, Y = leftWallScale.y
                 _backgroundGrid.transform.localScale = new Vector3(topWallScale.x / 6f, leftWallScale.y / 6f, topWallScale.z);
@@ -118,6 +121,7 @@ namespace Assets.Scripts
         {
             HighlightWalls(true);
             base.OnMouseDrag();
+            _collider.transform.position = transform.position;
         }
 
         private void HighlightWalls(bool flag)
