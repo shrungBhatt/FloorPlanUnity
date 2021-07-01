@@ -30,8 +30,7 @@ namespace Assets.Scripts
             _backgroundGrid.transform.SetParent(transform);
             AlignTheRoom();
             SetupColliderPoints();
-            transform.position += offsetPosition;
-            //transform.position = GetCentroidOfPolygon(Corners.Select(x => x.transform.position).ToList());
+            //transform.position += offsetPosition;
         }
 
         private void AlignTheRoom()
@@ -47,9 +46,9 @@ namespace Assets.Scripts
                     bool isPositiveSlope = slope >= 0;
                     var degree = Math.Atan(slope) * 180 / Math.PI;
 
-                    var offsetAngle = (float) (isPositiveSlope ? 360 - degree : 180 - degree);
+                    var offsetAngle = (float) (isPositiveSlope ? 360 - degree : (180 - degree));
 
-                    transform.rotation = Quaternion.Euler(0, 0, offsetAngle);
+                    transform.rotation = Quaternion.Euler(0, 0, isPositiveSlope ? offsetAngle : offsetAngle - 180);
                 }
                 
             }

@@ -40,6 +40,8 @@ namespace Assets.Scripts
         }
         private void Update()
         {
+            var updatedFloorPlan = GetUpdatedFloorPlan();
+            Debug.Log("Floor plan generated");
         }
         #endregion
 
@@ -139,14 +141,15 @@ namespace Assets.Scripts
                     {
                         var coords = Vector3.zero;
 
-                        if (!string.IsNullOrEmpty(corner.DataXY))
-                        {
-                            coords = Get3DPointFrom2DPoint(_deviceInfoModel.ZoomFactor, Get2DCoordinates(corner.DataXY), _deviceInfoModel.ScreenWidth, _deviceInfoModel.ScreenHeight);
-                        }
-                        else
-                        {
+                        //if (!string.IsNullOrEmpty(corner.DataXY))
+                        //{
+                        //    coords = Get3DPointFrom2DPoint(_deviceInfoModel.ZoomFactor, Get2DCoordinates(corner.DataXY), _deviceInfoModel.ScreenWidth, _deviceInfoModel.ScreenHeight);
+                        //    //coords = ConvertScreenPositionToWorldPosition(Get2DCoordinates(corner.DataXY));
+                        //}
+                        //else
+                        //{
                             coords = Get3DCoordinates(corner.Data);
-                        }
+                        //}
 
                         var connector = Instantiate(ConnectorPrefab, coords, Quaternion.identity);
                         connector.name = corner.Id;
@@ -320,6 +323,7 @@ namespace Assets.Scripts
                             planCorner.Data = Get3DCoordinatesString(corner.transform.position);
 
                             var coord = Get2DPointFrom3DPoint(_deviceInfoModel.ZoomFactor, corner.transform.position, _deviceInfoModel.ScreenWidth, _deviceInfoModel.ScreenHeight);
+                            //var coord = ConvertScreenPositionToWorldPosition(corner.transform.position);
                             planCorner.DataXY = Get2DCoordinatesString(coord);
                         }
                     }
@@ -429,7 +433,7 @@ namespace Assets.Scripts
             var vector2 = new Vector2();
 
             vector2.x = zoomFactor * point.x + screenWidth / 2;
-            vector2.y = screenHeight / 2 - zoomFactor * point.z;
+            vector2.y = screenHeight / 2 - zoomFactor * point.y;
 
             return vector2;
         }
