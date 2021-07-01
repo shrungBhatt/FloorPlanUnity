@@ -141,15 +141,15 @@ namespace Assets.Scripts
                     {
                         var coords = Vector3.zero;
 
-                        //if (!string.IsNullOrEmpty(corner.DataXY))
-                        //{
-                        //    coords = Get3DPointFrom2DPoint(_deviceInfoModel.ZoomFactor, Get2DCoordinates(corner.DataXY), _deviceInfoModel.ScreenWidth, _deviceInfoModel.ScreenHeight);
-                        //    //coords = ConvertScreenPositionToWorldPosition(Get2DCoordinates(corner.DataXY));
-                        //}
-                        //else
-                        //{
+                        if (!string.IsNullOrEmpty(corner.DataXY))
+                        {
+                            coords = Get3DPointFrom2DPoint(_deviceInfoModel.ZoomFactor, Get2DCoordinates(corner.DataXY), _deviceInfoModel.ScreenWidth, _deviceInfoModel.ScreenHeight);
+                            //coords = ConvertScreenPositionToWorldPosition(Get2DCoordinates(corner.DataXY));
+                        }
+                        else
+                        {
                             coords = Get3DCoordinates(corner.Data);
-                        //}
+                        }
 
                         var connector = Instantiate(ConnectorPrefab, coords, Quaternion.identity);
                         connector.name = corner.Id;

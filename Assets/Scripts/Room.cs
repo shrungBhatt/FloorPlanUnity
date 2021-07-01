@@ -28,9 +28,17 @@ namespace Assets.Scripts
             _backgroundGrid.name = "background";
             enableFreeMovement = true;
             _backgroundGrid.transform.SetParent(transform);
+            PivotTo(GetCentroidOfPolygon(Corners.Select(x => x.transform.position).ToList()));
             AlignTheRoom();
             SetupColliderPoints();
-            //transform.position += offsetPosition;
+        }
+
+        public void PivotTo(Vector3 position)
+        {
+            Vector3 offset = transform.position - position;
+            foreach (Transform child in transform)
+                child.transform.position += offset;
+            transform.position = position;
         }
 
         private void AlignTheRoom()
