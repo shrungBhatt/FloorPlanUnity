@@ -22,7 +22,7 @@ namespace Assets.Scripts
 
         List<GameObject> _connectors = new List<GameObject>();
         Dictionary<Face, List<Point>> _roomCornersDictionary = new Dictionary<Face, List<Point>>();
-        static FloorPlan _floorPlan;
+        static FloorPlan01 _floorPlan;
         DeviceInfoModel _deviceInfoModel;
         List<GameObject> _rooms = new List<GameObject>();
 
@@ -35,13 +35,20 @@ namespace Assets.Scripts
                 ScreenHeight = 3200,
                 ZoomFactor = 120
             };
-            InitRoomDictionary(FloorPlanJson.text);
-            CreateRooms();
+            //InitRoomDictionary(FloorPlanJson.text);
+            //CreateRooms();
         }
         private void Update()
         {
-            var updatedFloorPlan = GetUpdatedFloorPlan();
+            //var updatedFloorPlan = GetUpdatedFloorPlan();
             Debug.Log("Floor plan generated");
+
+#if UNITY_ANDROID
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+#endif
         }
         #endregion
 
@@ -78,10 +85,10 @@ namespace Assets.Scripts
         #region UI Builder Methods
         void InitRoomDictionary(string jsonContent)
         {
-            _floorPlan = JsonConvert.DeserializeObject<FloorPlan>(jsonContent);
+            _floorPlan = JsonConvert.DeserializeObject<FloorPlan01>(jsonContent);
 
             //Get all the room in the faces
-            var faces = _floorPlan.EagleViewExport.Structures.Roof.Faces;
+            var faces = _floorPlan.FloorPlan.EagleViewExport.Structures.Roof.Faces;
 
             var rooms = faces?.Face?.FindAll(x => (bool)x.Type?.Equals("ROOM"));
             //Get all the walls in the faces
@@ -98,7 +105,7 @@ namespace Assets.Scripts
                             var wallFace = faces?.Face?.Find(x => x.Id.Equals(wall));
                             if (wallFace != null)
                             {
-                                var line = _floorPlan.EagleViewExport.Structures.Roof.Lines.Line.Find(x => x.Id.Equals(wallFace.Polygon.Path));
+                                var line = _floorPlan.FloorPlan.EagleViewExport.Structures.Roof.Lines.Line.Find(x => x.Id.Equals(wallFace.Polygon.Path));
                                 if (line != null)
                                 {
                                     var points = line.Path.Split(',');
@@ -106,7 +113,7 @@ namespace Assets.Scripts
                                     {
                                         foreach (var point in points)
                                         {
-                                            var pointCoord = _floorPlan.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(point));
+                                            var pointCoord = _floorPlan.FloorPlan.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(point));
                                             if (pointCoord != null)
                                             {
                                                 if (!corners.Contains(pointCoord))
@@ -182,7 +189,10 @@ namespace Assets.Scripts
                 {
                     roomScript.Corners = _connectors;
                     roomScript.Walls = walls;
-                    roomScript.offsetPosition = offsetPostion;
+                    if (key.Id.Equals(_floorPlan.NewRoomId))
+                    {
+                        roomScript.offsetPosition = offsetPostion;
+                    }
                 }
 
                 offsetPostion += CalculateOffsetPostion(room);
@@ -317,7 +327,7 @@ namespace Assets.Scripts
                 {
                     foreach (var corner in roomScript.Corners)
                     {
-                        var planCorner = _floorPlan.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(corner.name));
+                        var planCorner = _floorPlan.FloorPlan.EagleViewExport.Structures.Roof.Points.Point.Find(x => x.Id.Equals(corner.name));
                         if (planCorner != null)
                         {
                             planCorner.Data = Get3DCoordinatesString(corner.transform.position);

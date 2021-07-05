@@ -61,6 +61,7 @@
     <Compile Include="Assets\Scripts\Models\Faces.cs" />
     <Compile Include="Assets\Scripts\Models\Roof.cs" />
     <Compile Include="Assets\Scripts\Models\Report.cs" />
+    <Compile Include="Assets\Scripts\Models\DeviceInfoModel.cs" />
     <Compile Include="Assets\Scripts\Models\EagleViewExport.cs" />
     <Compile Include="Assets\Scripts\Builder.cs" />
     <Compile Include="Assets\Scripts\Models\Structures.cs" />
@@ -77,7 +78,7 @@
     <Compile Include="Assets\Scripts\MeasureLine.cs" />
     <Compile Include="Assets\Scripts\DragObject.cs" />
     <Compile Include="Assets\Scripts\Wall.cs" />
-    <Compile Include="Assets\Scripts\Models\DeviceInfoModel.cs" />
+    <Compile Include="Assets\Scripts\FloorPlan01.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

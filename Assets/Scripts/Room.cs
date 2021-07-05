@@ -16,7 +16,7 @@ namespace Assets.Scripts
         public List<GameObject> Corners = new List<GameObject>();
         public List<GameObject> Walls = new List<GameObject>();
         public GameObject BackgroundPrefab;
-        public Vector3 offsetPosition;
+        public Vector3 offsetPosition = Vector3.zero;
 
         PolygonCollider2D _collider;
         GameObject _backgroundGrid;
@@ -28,11 +28,18 @@ namespace Assets.Scripts
             _backgroundGrid.name = "background";
             enableFreeMovement = true;
             _backgroundGrid.transform.SetParent(transform);
+
+            if (offsetPosition != Vector3.zero)
+            {
+                transform.position += offsetPosition;
+            }
+
             var centroid = GetCentroidOfPolygon(Corners.Select(x => x.transform.position).ToList());
             PivotTo(centroid, transform);
             
             AlignTheRoom();
             SetupColliderPoints();
+            
         }
 
         public void PivotTo(Vector3 position, Transform transform)
@@ -173,6 +180,8 @@ namespace Assets.Scripts
         void DrawText()
         {
 
+            //Debug.Log($"The area of polygon ${name} is: {GetAreaOfPolygon(Corners.Select(x => x.transform.position).ToList())}");
+
             var pos = GetCentroidOfPolygon(Corners.Select(x => ConvertWorldPositionToScreenPosition(x.transform.position)).ToList());
             var text = $"{name}";
             var textSize = GUI.skin.label.CalcSize(new GUIContent(text));
@@ -233,6 +242,33 @@ namespace Assets.Scripts
             centroid.y = centerY / accumulatedArea;
 
             return centroid;
+        }
+
+        public float GetAreaOfPolygon(List<Vector3> vertices)
+        {
+            var centroid = new Vector3();
+
+            float accumulatedArea = 0.0f;
+            float centerX = 0.0f;
+            float centerY = 0.0f;
+
+            for (int i = 0, j = vertices.Count - 1; i < vertices.Count; j = i++)
+            {
+                float temp = vertices[i].x * vertices[j].y - vertices[j].x * vertices[i].y;
+                accumulatedArea += temp;
+                centerX += (vertices[i].x + vertices[j].x) * temp;
+                centerY += (vertices[i].y + vertices[j].y) * temp;
+            }
+
+            //The area should not be zero.
+            //if (Math.Abs(accumulatedArea) < 1E-7f)
+            //    return centroid;
+
+            accumulatedArea *= 3f;
+            //centroid.x = centerX / accumulatedArea;
+            //centroid.y = centerY / accumulatedArea;
+
+            return accumulatedArea;
         }
     }
 }
